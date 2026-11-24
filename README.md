@@ -2,6 +2,13 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6.3 — LUMEN R24
+- `regionalTrain.js`: nový regionální maglev délky 24 m, dva průchozí články, 16 samostatně modelovaných sedadel, prosklené stěny, skutečné dveřní otvory, madla, zavazadlové police, palubní displeje, levitační moduly a rozdílná barevnost M1/M2.
+- Stejná geometrie interiéru a exteriéru je používána ve stanici i během cesty. Nástup a výstup probíhají chůzí přes správný dveřní otvor na straně nástupiště, bez automatického výstupu. Stání, chůze a dobrovolné sezení; E/POUŽÍT nebo palubní tlačítko pro sednutí a vstávání. Poloha a sedadlo se ukládají.
+- Při místním příjezdu, stání a odjezdu se z kabiny vykresluje skutečný region se stanicí. Mezi regiony je zatím využita vizuální simulace krajiny. Nova Aster není otevřená pro výstup.
+- Zkrácená nástupiště (29 m), zvýšená na úroveň podlahy vozidla. Oba směry a původní jízdní řády zachovány.
+- Design Lab aktualizován o nový model a pohled z interiéru. 96 dílčích kontrol průchodnosti, dveřních pravidel, jízdního stavu a migrace uložení prošlo; syntaktická kontrola prošla. Skutečný grafický a herní test na iPadu zatím nebyl proveden.
+
 ## 0.1.3.6.2 — Kolosy Elyry
 - Dva fyzicky oddělené hladké magnetické koridory v Údolí 07 i Haven, s protisměrnými linkami M1 a M2 a samostatnými jízdními řády. Obě linky přepravují hráče mezi dostupnými regiony. M2 má v Údolí nástupiště 02, A2 přesunuto na 03. Ve vzdálených úsecích zůstává krajina simulována.
 - `monuments5000.js`: dvě monumentální brány vysoké přibližně 32 m, vzdálená silueta devíti věží o výšce 72–124 m, energetický prstenec a větší nebeská tělesa. Věže za hranicí mapy jsou vizuální kulisa, nikoliv zpřístupněné město.
