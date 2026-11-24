@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.5 — Alien Nature
+- `valley-flora.js`: devět druhů (Aurora, Spire, Veil, stříbrný keř, spirálová kapradina, luminové houby, azurová tráva, čedičový balvan a vrstevnatá skála). Deterministické rozmístění dle výšky, sklonu, skalnatosti a shluků, pevné lokální souřadnice. Tři hustotní pásma, ochrana tras, vyhlídek a budoucí osady. Zjednodušené kruhové kolize kmenů a velkých skal; ostatní vegetace průchozí.
+- `valley-nature.js`: originální parametrické geometrie větvených stromů, listových pásů, hub a deformovaných kamenů; detailní a zjednodušené varianty, společný vertex-colour materiál a instancing. Orientace dle radiály planety, lokální počátek, blízké objekty přizpůsobené aktivní výšce terénu. Omezené dosahy podle kvality, bez rozšiřování mapy. Přepínač Příroda v exploreru. Opraveny záporné materiálové váhy údolí a zbytečné změny identity aktivní sady dlaždic každý snímek.
+- 74 530 dílčích kontrol pravidel rozmístění, opakovatelnosti, rozpočtu, bezpečného odstupu a kolizí. V pěti startech mobilní konfigurace vybrala 1 144–2 601 objektů; vysoká 2 320–4 350. Nejde o změřený výkon GPU. Syntaxe prošla; skutečný Three.js renderer, vizuální kvalita geometrie, FPS, iPad a GitHub Pages nejsou ověřeny. Modely jsou zatím procedurální polygonální prototypy, bez profesionálních textur, animací větru či hotového Unreal exportu; houby nemají zatím emisní svícení. Vzdálená vegetace může mít výškový rozdíl proti hrubému LOD.
+- Další etapa: filmová atmosféra, osvětlení a skutečné vizuální ladění.
+ 
 ## 0.1.4.4 — Valley 07 Terrain Pass
 - Authorovaný reliéf Údolí 07 je součástí společné kulové Elyry na 36° N / 18° E, nikoli nová plochá mapa. Hlavní oblast 2,5 × 3,5 km, plynulé přechodové pásmo až 1 km. Dva hřebeny, východní rokle, severní průchod, jižní otevření, chráněná plošina 240 × 240 m pro budoucí osadu. V mřížce 10 m převýšení cca 458 m. Původní kontinenty a klimatická klasifikace zachovány.
 - Tři navržené pěší trasy o celkové délce cca 5,09 km, modelované stoupání západní vyhlídky. Vzorky po cca 2 m na osách tras: max. sklon hlavní 8,65 %, západní 27,31 %, východní 18,84 %. Lokální mapa s polohou, pět volitelných průzkumných startů, nové barevné směsi půdy, luk a skal. Základní barvení je výchozí; úzké cesty mohou v hrubém vzdáleném LOD zanikat.
