@@ -1,0 +1,155 @@
+{
+  "id": "valley-07",
+  "name": "Údolí 07",
+  "widthMeters": 2500,
+  "lengthMeters": 3500,
+  "detailWidthMeters": 1200,
+  "detailLengthMeters": 1600,
+  "blendWidthMeters": 1000,
+  "center": {
+    "lat": 36,
+    "lon": 18
+  },
+  "baseElevationMeters": 1535.1209906137683,
+  "points": [
+    {
+      "id": "settlement",
+      "name": "Plošina osady",
+      "x": 0,
+      "z": 0
+    },
+    {
+      "id": "south",
+      "name": "Jižní panorama",
+      "x": 15,
+      "z": -1350
+    },
+    {
+      "id": "north",
+      "name": "Severní průchod",
+      "x": -35,
+      "z": 1450
+    },
+    {
+      "id": "west",
+      "name": "Západní vyhlídka",
+      "x": -660,
+      "z": -420
+    },
+    {
+      "id": "east",
+      "name": "Východní rokle",
+      "x": 640,
+      "z": 520
+    }
+  ],
+  "routes": [
+    {
+      "id": "main",
+      "name": "Hlavní cesta",
+      "points": [
+        [
+          15,
+          -1600
+        ],
+        [
+          15,
+          -1350
+        ],
+        [
+          35,
+          -850
+        ],
+        [
+          -20,
+          -350
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          -20,
+          500
+        ],
+        [
+          -35,
+          1050
+        ],
+        [
+          -35,
+          1450
+        ],
+        [
+          -35,
+          1700
+        ]
+      ],
+      "width": 14
+    },
+    {
+      "id": "west",
+      "name": "Cesta na západní vyhlídku",
+      "points": [
+        [
+          -20,
+          -350
+        ],
+        [
+          -160,
+          -490
+        ],
+        [
+          -330,
+          -620
+        ],
+        [
+          -540,
+          -690
+        ],
+        [
+          -700,
+          -630
+        ],
+        [
+          -750,
+          -520
+        ],
+        [
+          -660,
+          -420
+        ]
+      ],
+      "width": 12
+    },
+    {
+      "id": "east",
+      "name": "Cesta do východní rokle",
+      "points": [
+        [
+          -20,
+          500
+        ],
+        [
+          155,
+          410
+        ],
+        [
+          305,
+          365
+        ],
+        [
+          460,
+          430
+        ],
+        [
+          640,
+          520
+        ]
+      ],
+      "width": 10
+    }
+  ],
+  "coordinateSystem": "local east/north metres on Elyra sphere",
+  "generator": "elyra-geography.js?v=3"
+}
