@@ -1,6 +1,6 @@
-import {buildRegionalTrain,REGIONAL,platformSide,nearDoor} from './regionalTrain.js?v=01364';
+import {buildRegionalTrain,REGIONAL,platformSide,nearDoor} from './regionalTrainVector.js?v=01365';
 // NEXUS 5000 / public transport design system. Original procedural meshes.
-export const DIMENSIONS={M1:{length:24,width:3.3,height:3.3,cars:2},A2:{length:10.8,width:4.1,height:3.6}};
+export const DIMENSIONS={M1:{length:27,width:3.45,height:3.65,cars:2},A2:{length:10.8,width:4.1,height:3.6}};
 export function createTransitVehicles(T){
  const mat=(color,roughness=.36,metalness=.35)=>new T.MeshStandardMaterial({color,roughness,metalness});
  const glow=(color,emissive=color)=>new T.MeshStandardMaterial({color,emissive,emissiveIntensity:1.4,roughness:.28});
@@ -46,6 +46,6 @@ export function installTransitVehicles(T,{frontier,haven,schedule}){
  function toLocal(e,x,z){const k=e.line==='M2'?-1:1,p=e.model.group.position;return {x:(x-p.x)*k,z:(z-p.z)*k}}
  function toWorld(e,x,z){const k=e.line==='M2'?-1:1,p=e.model.group.position;return {x:p.x+x*k,z:p.z+z*k}}
  function crossing(region,x,z,nx,nz){for(const e of entries){if(e.line==='A2'||e.stop!==(region==='haven'?'haven':'valley')||e.state?.local!=='docked'||!e.model.doorOpen)continue;const p=toLocal(e,x,z),n=toLocal(e,nx,nz),side=platformSide(e.line,e.stop);if(p.x*side>=REGIONAL.exitX&&n.x*side<REGIONAL.exitX&&nearDoor(n.z,.48))return {entry:e,x:n.x,z:n.z}}return null}
- function solid(region,x,z){for(const e of entries){if(e.line==='A2'||e.stop!==(region==='haven'?'haven':'valley')||!e.model.group.visible)continue;const p=toLocal(e,x,z);if(Math.abs(p.z)>12.25||Math.abs(p.x)>1.84)continue;return true}return false}
+ function solid(region,x,z){for(const e of entries){if(e.line==='A2'||e.stop!==(region==='haven'?'haven':'valley')||!e.model.group.visible)continue;const p=toLocal(e,x,z);if(Math.abs(p.z)>13.75||Math.abs(p.x)>1.84)continue;return true}return false}
  return {entries,update,nearest,docked,toLocal,toWorld,crossing,solid};
 }
