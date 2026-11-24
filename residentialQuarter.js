@@ -1,3 +1,4 @@
+import {createOrganicEnvelope,architectureMaterials} from './organicArchitecture.js?v=01368';
 // Valley 07 south residential quarter. All dimensions in metres.
 export const RESIDENTIAL=[
  {id:'H-03',title:'ORBIT',type:'arc',x:-50,z:38,w:10,d:8},
@@ -23,28 +24,14 @@ export function installResidential(T,root,colliders){
  const b=(m,x,y,z,w,h,d)=>batch(cube,m,x,y,z,w,h,d);
  function mesh(geo,m,x,y,z,w=1,h=1,d=1){const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.scale.set(w,h,d);o.receiveShadow=!m.transparent;group.add(o);return o}
  function col(x,z,w,d){colliders.push([x-w/2,x+w/2,z-d/2,z+d/2])}
- function sign(p){const c=document.createElement('canvas');c.width=384;c.height=128;const a=c.getContext('2d');a.fillStyle='#203743';a.fillRect(0,0,384,128);a.fillStyle='#d4f3ef';a.textAlign='center';a.font='bold 39px sans-serif';a.fillText(p.title,192,54);a.font='23px sans-serif';a.fillText('ELYRA / '+p.id,192,96);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;mesh(new T.PlaneGeometry(2.5,.83),new T.MeshBasicMaterial({map:t}),p.x,3.35,p.z+p.d/2+.16)}
- function profile(type,w){
-  // Outer and inner roof contours; keep all roofs hollow and at least 2.9m above floor.
-  if(type==='arc')return [[-w/2-.35,2.95],[-w*.49,4.05],[-w*.24,5.05],[0,5.2],[w*.24,5.05],[w*.49,4.05],[w/2+.35,2.95]];
-  if(type==='wing')return [[-w/2-.65,4.75],[-w*.33,4.3],[-w*.17,3.8],[0,3.55],[w*.17,3.8],[w*.33,4.3],[w/2+.65,4.75]];
-  return [[-w/2-.4,3.2],[-w*.29,3.2],[-w*.28,4.55],[w*.12,4.55],[w*.13,5.65],[w*.37,5.65],[w*.38,3.6],[w/2+.4,3.6]];
- }
- function roof(p){const points=profile(p.type,p.w);const sh=new T.Shape();sh.moveTo(...points[0]);for(let i=1;i<points.length;i++)sh.lineTo(...points[i]);for(let i=points.length-1;i>=0;i--)sh.lineTo(points[i][0],points[i][1]-.24);sh.closePath();mesh(new T.ExtrudeGeometry(sh,{depth:p.d+.8,bevelEnabled:true,bevelSize:.04,bevelThickness:.04,bevelSegments:1}),p.type==='wing'?M.blue:M.shell,p.x,0,p.z-p.d/2-.4);
-  // Close each roof end with a translucent clerestory; no opaque volume over the interior.
-  const g=new T.Shape();g.moveTo(-p.w/2,2.9);for(const q of points)g.lineTo(Math.max(-p.w/2,Math.min(p.w/2,q[0])),Math.max(2.9,q[1]-.25));g.lineTo(p.w/2,2.9);g.closePath();
-  for(const z of [-p.d/2,p.d/2])mesh(new T.ShapeGeometry(g),M.glass,p.x,0,p.z+z);
-  if(p.type==='tier'){b(M.blue,p.x+p.w*.23,5.7,p.z,2,.10,p.d*.7);for(let i=0;i<5;i++)b(M.dark,p.x+p.w*.23,5.76,p.z-p.d*.28+i*p.d*.14,1.9,.025,.035)}
- }
+ function sign(p){const c=document.createElement('canvas');c.width=384;c.height=128;const a=c.getContext('2d');a.fillStyle='#203743';a.fillRect(0,0,384,128);a.fillStyle='#d4f3ef';a.textAlign='center';a.font='bold 39px sans-serif';a.fillText(p.title,192,54);a.font='23px sans-serif';a.fillText('ELYRA / '+p.id,192,96);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;mesh(new T.PlaneGeometry(2.5,.83),new T.MeshBasicMaterial({map:t}),p.x,3.53,p.z+p.d/2+1.72)}
  function home(p){
   const B=(m,x,y,z,w,h,d)=>b(m,p.x+x,y,p.z+z,w,h,d),C=(x,z,w,d)=>col(p.x+x,p.z+z,w,d),S=(m,x,y,z,w,h,d)=>{B(m,x,y,z,w,h,d);C(x,z,w,d)};
   const {w,d}=p;buildings.push(p);
   B(M.stone,0,.035,0,w+.45,.07,d+.4);B(M.pave,0,.04,d/2+1.4,w+.7,.08,2.8);B(M.wood,0,.085,0,w-.3,.05,d-.3);
-  S(M.shell,0,1.45,-d/2,w,2.9,.2);
-  for(const side of [-1,1]){const x=side*w/2;C(x,0,.2,d);B(M.dark,x,.37,0,.2,.74,d);B(M.shell,x,2.72,0,.22,.4,d);for(const z of [-d/2,-d/6,d/6,d/2])B(M.dark,x,1.58,z,.22,2.4,.15);for(const z of [-d/3,0,d/3])mesh(cube,M.glass,p.x+x,1.63,p.z+z,.045,1.78,d/3-.15);
-   const fw=(w-2.4)/2,fx=side*(1.2+fw/2);C(fx,d/2,fw,.2);B(M.dark,fx,.34,d/2,fw,.68,.22);B(M.shell,fx,2.72,d/2,fw,.4,.22);mesh(cube,M.glass,p.x+fx,1.62,p.z+d/2,fw-.12,1.84,.05);B(M.dark,side*1.2,1.45,d/2,.15,2.9,.24);B(M.glow,fx,2.42,d/2+.12,fw-.2,.045,.03);
-   const panel=mesh(cube,M.blue,p.x+side*.59,1.25,p.z+d/2+.13,1.16,2.5,.10);doors.push({p,panel,side,open:0});B(M.warm,side*w*.28,2.76,0,.06,.04,d*.75)}
-  B(M.shell,0,2.72,d/2,2.4,.4,.26);roof(p);sign(p);
+  C(0,-d/2,w,.2);
+  for(const side of [-1,1]){C(side*w/2,0,.2,d);const fw=(w-2.4)/2,fx=side*(1.2+fw/2);C(fx,d/2,fw,.2);const panel=mesh(cube,architectureMaterials(T).glass,p.x+side*.59,1.25,p.z+d/2+.05,1.16,2.5,.055);doors.push({p,panel,side,open:0});B(M.warm,side*w*.28,2.76,0,.06,.04,d*.75)}
+  createOrganicEnvelope(T,group,{x:p.x,z:p.z,w,d,type:p.type,wallTop:2.9,doorWidth:2.4,rise:p.type==='tier'?2.65:2.25});sign(p);
   // Furniture is laid out to preserve a broad central aisle.
   const bx=-w/2+1.28,bz=-d/2+1.6;S(M.dark,bx,.27,bz,1.9,.54,2.45);B(M.cream,bx,.62,bz,1.83,.18,2.38);B(M.fabric,bx,.75,bz+.33,1.81,.08,1.6);for(const x of [-.43,.43])B(M.cream,bx+x,.78,bz-.8,.76,.14,.47);
   const kx=w/2-.65;S(M.dark,kx,.48,-d/2+1.45,1,.96,2.7);B(M.wood,kx,1.0,-d/2+1.45,1.05,.08,2.8);B(M.blue,kx,1.065,-d/2+.8,.68,.05,.75);B(M.glow,kx-.53,.88,-d/2+1.5,.03,.06,2.25);
