@@ -11,6 +11,8 @@ Nativní prototyp pro Windows a Unreal Engine 5. Na plošině stojí obytný mod
 
 Verzi lze zvolit příkazem `Start-Nexus.cmd -EngineRoot "D:\Epic Games\UE_5.6"`. Příklad cesty uprav podle své instalace. Vytvořené mapy a materiály najdeš v Content Browseru pod Maps, Flora a FieldMaterials. Při dalším startu se existující mapa otevře s uloženými úpravami. Všechny podklady pro sestavení jsou přiložené. Node.js se používá pouze při změně exportu ze zdrojového generátoru.
 
+Pokud UnrealBuildTool ohlásí v souboru `Nexus.uproject` chybu `0xFF` na prvním bajtu, vezmi z opraveného ZIPu soubor `Tools/Start-Nexus.ps1`, nahraď jím stejný soubor ve svém projektu a spusť `Start-Nexus.cmd`. Spouštěč zkontroluje JSON a při rozpoznané značce kódování převede celý text do UTF-8 bez BOM. Původní bajty uloží do souboru `Nexus.uproject.<id>.bak` vedle projektu. Samotnou kontrolu a případnou opravu spustíš příkazem `Start-Nexus.cmd -CheckProjectOnly`.
+
 ## Ovládání
 
 | Akce | Klávesy |
