@@ -2,6 +2,14 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6.4 — LUMEN R24: Dotažení
+- `regionalTrain.js`: detailnější materiály – procedurální textury podlahy s protiskluzovou strukturou, čalounění se vzorem LUMEN, perforované obložení interiéru, odlesky laku, skel a kovu (slábnou v noci). Interiér má podhled se světelným pruhem, nepřímé osvětlení nad policemi, zaoblené čalouněné sedáky a opěradla, opěrky hlavy, madla, rámy průchodu mezi články, žluté výstražné pruhy u dveří a čtyři zavěšené palubní displeje. Exteriér má střešní kryty, světelné linky, těsnění dveřních portálů, LED pásky na čelech a levitační moduly, jejichž záře sílí s rychlostí.
+- Dveře: výklopně-posuvný mechanismus (křídlo se nejdřív vysune ven, pak odjede po boku vozu), plynule vysouvaný nástupní schůdek, tlačítka a kontrolky dveří uvnitř i venku (zelená = uvolněno, blikající červená = zavírání). Deterministický cyklus podle jízdního řádu: uvolnění → otevírání → otevřeno → výstraha → zavírání → zamčeno. Nastoupit i vystoupit lze jen skutečně otevřenými dveřmi; zavírající se dveře hráče vrátí dovnitř.
+- `lumenAudio.js` (nový): procedurální zvuk bez zvukových souborů – levitační hučení a pískání závislé na rychlosti (v kabině tlumené), proudění vzduchu, zvuk uvolnění, posunu a zamčení dveří, výstražné tóny před zavřením. Hlášení zastávek s gongem a titulky: uvítání, příští zastávka, výstup vlevo/vpravo ve směru jízdy, upozornění na neotevřenou Nova Aster a hlášení příjezdu na nástupiště. Mluvené hlášení se použije, jen pokud zařízení má český hlas; jinak zůstane gong a titulky.
+- Displeje ve vlaku ukazují stanici, odjezd, příští zastávku a výstrahu „DVEŘE SE ZAVÍRAJÍ“. Design Lab přehrává celý cyklus dveří se zvukem.
+- Optimalizace: statické díly vlaku jsou sloučeny podle materiálu – v Design Labu klesl počet vykreslovacích volání z 330 na 94 za snímek, ve scéně s vlakem v Údolí 07 z 883 na 760. Geometrie je přitom detailnější (cca 47 tisíc vrcholů na soupravu).
+- Ověření: 9 automatických testů (cyklus dveří po celý den pro M1 i M2, texty hlášení, celý okruh M1 s hlášeními, pořadí zvuků dveří na nástupišti), syntaktická kontrola a vykreslení ve webovém prohlížeči (Design Lab, nástupiště ve dne i v noci, jízda v kabině). V softwarovém vykreslování je snímková frekvence detailnějšího vlaku nižší; skutečný výkon, zvuk a hlas na iPadu zatím nebyly ověřeny.
+
 ## 0.1.3.6.3 — LUMEN R24
 - `regionalTrain.js`: nový regionální maglev délky 24 m, dva průchozí články, 16 samostatně modelovaných sedadel, prosklené stěny, skutečné dveřní otvory, madla, zavazadlové police, palubní displeje, levitační moduly a rozdílná barevnost M1/M2.
 - Stejná geometrie interiéru a exteriéru je používána ve stanici i během cesty. Nástup a výstup probíhají chůzí přes správný dveřní otvor na straně nástupiště, bez automatického výstupu. Stání, chůze a dobrovolné sezení; E/POUŽÍT nebo palubní tlačítko pro sednutí a vstávání. Poloha a sedadlo se ukládají.

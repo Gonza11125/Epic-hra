@@ -1,4 +1,4 @@
-import {buildRegionalTrain,SEATS,cabinWalkable} from './regionalTrain.js?v=01363';
+import {buildRegionalTrain,SEATS,cabinWalkable,motionLevel} from './regionalTrain.js?v=01364';
 // Passenger state and cabin rendering are separate from the timetable.
 export const BOARDING={valley:{region:'frontier',x:-2.65,z:0},haven:{region:'haven',x:1.75,z:-13}};
 export function boardingPoint(line,stop){const p=BOARDING[stop];if(!p)return null;return line==='M2'?{...p,x:stop==='valley'?4.55:-.15}:p}
@@ -17,9 +17,9 @@ export function createPassengerCabin(T){
  const trunkGeo=new T.CylinderGeometry(.15,.28,1,7),crownGeo=new T.IcosahedronGeometry(1,1),bark=mat(0x4e5365),leaf=mat(0x8889b3);const trunks=new T.InstancedMesh(trunkGeo,bark,90),crowns=new T.InstancedMesh(crownGeo,leaf,90),obj=new T.Object3D(),specs=[];
  for(let i=0;i<90;i++)specs.push({x:(i%2?1:-1)*(5+rand()*65),z:(rand()-.5)*150,h:3+rand()*7,r:1+rand()*2});trees.add(trunks,crowns);
  const station=new T.Group();outside.add(station);box(station,dark,-3.1,-.08,0,2.4,.18,20);box(station,shell,-3.1,3.3,0,2.6,.15,20);for(const z of [-8,0,8])box(station,dark,-3.1,1.55,z,.14,3.1,.14);
- let offset=0,lastLabel='';function update(dt,v,schedule,time){opposite.position.x=v?.line==='M2'?-7.2:7.2;const moving=v?.status==='moving';if(moving)offset=(offset+dt*23)%150;station.visible=!moving;trees.visible=moving;for(let i=0;i<specs.length;i++){const p=specs[i],z=((p.z+offset+225)%150)-75;obj.position.set(p.x,p.h*.45,z);obj.scale.set(1,p.h*.9,1);obj.updateMatrix();trunks.setMatrixAt(i,obj.matrix);obj.position.set(p.x,p.h,z);obj.scale.set(p.r,p.h*.27,p.r);obj.updateMatrix();crowns.setMatrixAt(i,obj.matrix)}trunks.instanceMatrix.needsUpdate=crowns.instanceMatrix.needsUpdate=true;trunks.frustumCulled=crowns.frustumCulled=false;
- const model=models[v?.line||'M1'];for(const m of Object.values(models))m.group.visible=m===model;model.setDoors(false);model.setDisplay(v?.stop?'STANICE '+schedule.STOPS[v.stop].name:'DALŠÍ '+(schedule.STOPS[v?.next]?.name||'—')+' '+schedule.formatClock(v?.arrival??0));
- const day=Math.max(.08,Math.sin((time-6)/12*Math.PI));scene.background.set(0x101d32).lerp(new T.Color(0x92b8ca),day);scene.fog.color.copy(scene.background);hemi.intensity=.65+day*1.4;sun.intensity=day*2.2;
+ let offset=0,lastLabel='';function update(dt,v,schedule,time){opposite.position.x=v?.line==='M2'?-7.2:7.2;const moving=v?.status==='moving',ml=motionLevel(v);if(moving)offset=(offset+dt*26*Math.max(.06,ml))%150;station.visible=!moving;trees.visible=moving;for(let i=0;i<specs.length;i++){const p=specs[i],z=((p.z+offset+225)%150)-75;obj.position.set(p.x,p.h*.45,z);obj.scale.set(1,p.h*.9,1);obj.updateMatrix();trunks.setMatrixAt(i,obj.matrix);obj.position.set(p.x,p.h,z);obj.scale.set(p.r,p.h*.27,p.r);obj.updateMatrix();crowns.setMatrixAt(i,obj.matrix)}trunks.instanceMatrix.needsUpdate=crowns.instanceMatrix.needsUpdate=true;trunks.frustumCulled=crowns.frustumCulled=false;
+ const model=models[v?.line||'M1'];for(const m of Object.values(models))m.group.visible=m===model;model.setDoorProgress(0,0,'closed');if(v?.stop)model.setDisplay(schedule.STOPS[v.stop].name,'Odjezd '+schedule.formatClock(v.departure));else model.setDisplay('PŘÍŠTÍ ZASTÁVKA',(schedule.STOPS[v?.next]?.name||'—')+' · '+schedule.formatClock(v?.arrival??0));
+ const day=Math.max(.08,Math.sin((time-6)/12*Math.PI));model.animate(dt,{speed:ml,daylight:day});scene.background.set(0x101d32).lerp(new T.Color(0x92b8ca),day);scene.fog.color.copy(scene.background);hemi.intensity=.65+day*1.4;sun.intensity=day*2.2;
  }
  return {scene,update};
 }
