@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.6 — Cinematic Atmosphere
+- `planet-atmosphere.js`: planetární směr slunce, 27hodinový den, místní čas podle zeměpisné délky, plynulá změna oblohy, barvy a intenzity světla, procedurální mraky a hvězdy, atmosférický opar mizící ve výšce. Výchozí denní cyklus je zrychlený (0,035 herní hodiny za sekundu simulace). Svítání/den/západ/noc jsou pevné místní časové předvolby, nikoli astronomické výpočty východu pro každou šířku. Tři volby oblačnosti.
+- `valley-nature.js`: instancované rostliny mají shaderové kývání ve větru; kameny ne. Ve vysoké kvalitě je během chůze za dne povolena lokální stínová mapa 1024² s blízkými stínícími modely vegetace a postavy; terén přijímá stíny. Mobilní režim dynamické stíny vypíná. Nejde o plnohodnotnou volumetrickou atmosféru nebo stíny všech hor.
+- 11 553 dílčích numerických kontrol: 2 310 kombinací času, šířky a délky, jednotkový směr slunce, rozsahy intenzit, opačné polokoule, periodicita a přechod do vesmíru, místní čas a předvolby. JavaScript syntakticky ověřen; shaderová kompilace, vizuální výsledek, výkon, iPad a nasazení GitHub Pages neověřeny.
+- Další etapa: voda, potoky a odrazy. Webový prototyp zůstává oddělený od budoucího nativního Unreal projektu.
+ 
 ## 0.1.4.5 — Alien Nature
 - `valley-flora.js`: devět druhů (Aurora, Spire, Veil, stříbrný keř, spirálová kapradina, luminové houby, azurová tráva, čedičový balvan a vrstevnatá skála). Deterministické rozmístění dle výšky, sklonu, skalnatosti a shluků, pevné lokální souřadnice. Tři hustotní pásma, ochrana tras, vyhlídek a budoucí osady. Zjednodušené kruhové kolize kmenů a velkých skal; ostatní vegetace průchozí.
 - `valley-nature.js`: originální parametrické geometrie větvených stromů, listových pásů, hub a deformovaných kamenů; detailní a zjednodušené varianty, společný vertex-colour materiál a instancing. Orientace dle radiály planety, lokální počátek, blízké objekty přizpůsobené aktivní výšce terénu. Omezené dosahy podle kvality, bez rozšiřování mapy. Přepínač Příroda v exploreru. Opraveny záporné materiálové váhy údolí a zbytečné změny identity aktivní sady dlaždic každý snímek.
