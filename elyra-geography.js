@@ -39,7 +39,7 @@ function findLand(lat,lon,preferredCivilization){for(let r=0;r<=30;r++)for(let i
 const anchor=findLand(36,18,'union');
 export const LOCATIONS=[
 {id:'frontier',name:'Údolí 07',kind:'osada',...anchor},
-{id:'haven',name:'Haven',kind:'pobřežní oblast',...findLand(anchor.lat+2,anchor.lon+3,'union')},
+{id:'haven',name:'Haven',kind:'pobřežní oblast',lat:33.25,lon:17.5,biome:sample(direction(33.25,17.5)).biome},
 {id:'capital',name:'Nova Aster',kind:'hlavní město',...findLand(anchor.lat-4,anchor.lon-5,'union')},
 ...CIVILIZATIONS.slice(1).map(c=>({id:c.id+'-hub',name:c.name,kind:'plánované centrum',...findLand(c.lat,c.lon,c.id)}))];
 export function geographyManifest(){return {schema:1,planet:PLANET,coordinateSystem:'unit vector [cos(lat)*cos(lon),sin(lat),cos(lat)*sin(lon)]; degrees; km',biomes:BIOMES,civilizations:CIVILIZATIONS,locations:LOCATIONS,algorithm:'elyra-geography.js revision 1; sample(unitDirection)'}}
