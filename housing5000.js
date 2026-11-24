@@ -1,3 +1,4 @@
+import {createOrganicEnvelope,architectureMaterials} from './organicArchitecture.js?v=01368';
 // NEXUS 5000: modular residential architecture.
 // Original procedural models; units in metres, positive Z is the entrance.
 export function createResidentialLibrary(T){
@@ -9,20 +10,15 @@ export function createResidentialLibrary(T){
  const s=(g,m,x,y,z,w,h,d)=>mesh(g,sphere,m,x,y,z,w,h,d);
  const c=(g,m,x,y,z,w,h,d=w)=>mesh(g,cyl,m,x,y,z,w,h,d);
  function sign(g,title,sub,x,y,z,w=2.2){const cv=document.createElement('canvas');cv.width=512;cv.height=160;const a=cv.getContext('2d');a.fillStyle='#182d39';a.fillRect(0,0,512,160);a.fillStyle='#a5e4e6';a.font='bold 45px sans-serif';a.textAlign='center';a.fillText(title,256,65);a.fillStyle='#bfd1d7';a.font='24px sans-serif';a.fillText(sub,256,110);const tex=new T.CanvasTexture(cv);tex.colorSpace=T.SRGBColorSpace;return mesh(g,new T.PlaneGeometry(w,w*160/512),new T.MeshBasicMaterial({map:tex}),x,y,z)}
- // Extruded curved roof section; a hollow shell rather than a solid block.
- function roof(g,w,d){const sh=new T.Shape();sh.moveTo(-w/2-.18,2.55);sh.lineTo(-w/2-.18,2.95);sh.quadraticCurveTo(-w/2-.02,3.55,-w*.34,3.78);sh.quadraticCurveTo(0,4.35,w*.34,3.78);sh.quadraticCurveTo(w/2+.02,3.55,w/2+.18,2.95);sh.lineTo(w/2+.18,2.55);sh.lineTo(w/2-.05,2.55);sh.lineTo(w/2-.05,2.96);sh.quadraticCurveTo(w/2-.22,3.39,w*.31,3.55);sh.quadraticCurveTo(0,4.08,-w*.31,3.55);sh.quadraticCurveTo(-w/2+.22,3.39,-w/2+.05,2.96);sh.lineTo(-w/2+.05,2.55);sh.closePath();const geo=new T.ExtrudeGeometry(sh,{depth:d+.45,bevelEnabled:true,bevelThickness:.055,bevelSize:.055,bevelSegments:2,curveSegments:12});mesh(g,geo,M.shell,0,0,-d/2-.22)}
- function glassWall(g,side,w,d){const x=side*w/2; b(g,M.frame,x,.26,0,.18,.52,d);b(g,M.frame,x,2.72,0,.18,.56,d);for(const z of [-d/2+.14,0,d/2-.14])b(g,M.frame,x,1.49,z,.18,2.05,.16);for(const z of [-d/4,d/4])b(g,M.glass,x,1.52,z,.045,1.95,d/2-.2);b(g,M.light,x,2.43,0,.045,.045,d-.45)}
  function habitat({id,title,w=8,d=7,variant='home'}){
   const g=new T.Group(),collisions=[],targets=[],doors=[];const addCol=(x,z,ww,dd)=>collisions.push([x-ww/2,x+ww/2,z-dd/2,z+dd/2]);
   const solid=(m,x,y,z,ww,h,dd)=>{addCol(x,z,ww,dd);return b(g,m,x,y,z,ww,h,dd)};
   b(g,M.floor,0,.045,0,w+.35,.09,d+.35);b(g,M.frame,0,.07,d/2+1.25,w+.8,.12,2.5);
-  roof(g,w,d);for(const side of [-1,1]){const arch=new T.Shape();arch.moveTo(-w/2+.08,3.0);arch.quadraticCurveTo(-w*.36,3.72,0,4.04);arch.quadraticCurveTo(w*.36,3.72,w/2-.08,3.0);arch.closePath();const geo=new T.ShapeGeometry(arch,16);const material=(side===1?M.glass:M.shell).clone();material.side=T.DoubleSide;mesh(g,geo,material,0,0,side*d/2)}glassWall(g,-1,w,d);glassWall(g,1,w,d);addCol(-w/2,0,.2,d);addCol(w/2,0,.2,d);
-  solid(M.shell,0,1.44,-d/2,w,2.88,.2);
-  // Front wall includes a true 1.7 m opening; animated panels slide clear.
   const opening=1.8,sideW=(w-opening)/2;
-  for(const side of [-1,1]){const x=side*(opening/2+sideW/2);solid(M.frame,x,.33,d/2,sideW,.66,.2);b(g,M.glass,x,1.58,d/2,sideW-.20,1.84,.055);b(g,M.shell,x,2.75,d/2,sideW,.50,.22);for(const dx of [-sideW/2+.06,sideW/2-.06])b(g,M.frame,x+dx,1.51,d/2,.12,2.17,.24);b(g,M.light,x,2.46,d/2+.14,sideW-.23,.045,.04)}
-  b(g,M.shell,0,2.78,d/2,opening+.22,.44,.28);for(const x of [-.97,.97])b(g,M.frame,x,1.21,d/2,.15,2.44,.3);
-  for(const side of [-1,1]){const panel=new T.Group();g.add(panel);panel.position.set(side*.45,1.20,d/2+.08);b(panel,M.frame,0,0,0,.87,2.36,.13);b(panel,M.glass,0,.36,.08,.62,1.18,.045);b(panel,M.light,-side*.35,0,.085,.035,1.95,.035);doors.push({panel,side})}
+  addCol(-w/2,0,.2,d);addCol(w/2,0,.2,d);addCol(0,-d/2,w,.2);
+  for(const side of [-1,1])addCol(side*(opening/2+sideW/2),d/2,sideW,.2);
+  createOrganicEnvelope(T,g,{w,d,type:variant==='community'?'forum':title==='NOVA'?'nova':'arc',wallTop:2.9,doorWidth:opening,rise:variant==='community'?2.2:1.85});
+  for(const side of [-1,1]){const panel=new T.Group();g.add(panel);panel.position.set(side*.45,1.20,d/2+.08);b(panel,architectureMaterials(T).glass,0,0,0,.87,2.36,.08);b(panel,architectureMaterials(T).porcelain,0,-1.04,.055,.87,.23,.07);b(panel,M.light,-side*.35,0,.085,.035,1.95,.035);doors.push({panel,side})}
   // Side window frames and bright, low-profile pathway guides.
   for(const x of [-w/2+.3,w/2-.3]){b(g,M.light,x,.12,d/2+1.25,.055,.025,2.1);b(g,M.light,x,3.16,0,.075,.05,d-.2)}
   sign(g,title,'ELYRA / '+id,0,3.12,d/2+.28,2.25);
