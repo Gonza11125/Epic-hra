@@ -1,5 +1,12 @@
 # NEXUS — One world. Infinite futures.
 
+## 0.1.1 — Ozvěny údolí
+- Procedurální povrchové textury, tráva, nové orientační body a osvětlení nádraží.
+- Cyklus počasí: jasno, mlha a déšť; ambientní zvuk větru a potvrzení interakcí.
+- Mapa oblasti (M nebo tlačítko MAPA), čtyři volitelné záznamy a expediční deník.
+- Kompatibilita se save 0.1.0; multiplayer zatím není dostupný.
+- Kontrola syntaxe JavaScriptu prošla; test v Safari na zařízení zbývá.
+
 ## 0.1.0 — Probuzení
 Webový 3D prototyp první expedice, Three.js r160 / WebGL. Bez sestavování. Otevři GitHub Pages nebo spusť statický HTTP server v kořeni projektu. První načtení vyžaduje internet pro CDN.
 
