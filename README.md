@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6.7 — Jižní obytná čtvrť
+- `residentialQuarter.js`: šest domů ORBIT, SOLA, TERRA, IRIS, VELA a ZENITH ve třech architektonických stylech (oblouková, křídlová a terasovitá střecha), se zařízenými interiéry, automaticky posuvnými dveřmi, adresami a zahradními prvky.
+- Dvě obytné oblasti navazují na Aster Market a Luma Gardens; šest pěších úseků, světelné lemování a šest lamp. Domy a nové chodníky zobrazeny na minimapě. Společná funkce cityClearance brání generování vegetace a kamenů v zastavěné oblasti.
+- 354 statických prvků seskupeno do 14 instančních dávek; 84 dalších mesh objektů. 76 nových kolizních boxů. 240 strukturálních kontrol pomocí náhradních Three.js tříd ověřilo vchody, středové uličky, návaznost chodníků, chráněné body a konečné souřadnice. Syntaxe hlavního skriptu a nového modulu prošla. Skutečný GPU/iPad test zatím neproveden.
+- Rozsah mapy se nemění. Vlastnictví a obyvatelé zatím nejsou aktivní. Doprava a původní úkoly nebyly měněny.
+ 
 ## 0.1.3.6.6 — Údolí 07: občanské čtvrti
 - Nový modul `districts5000.js`: tři průchozí veřejné budovy Aster Market, Helix Institute a Vita Centre s prosklenými stěnami, tvarovanými střechami, odlišnými střešními detaily, interiérovým vybavením a informačními panely; Luma Gardens s fontánou, svítícími rostlinami a mobiliářem.
 - Čtyři občanské zóny, šest propojujících pěších úseků se světelnými okraji, osm laviček a deset lamp. Nové zóny a půdorysy budov se zobrazují na herní mapě.
