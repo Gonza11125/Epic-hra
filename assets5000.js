@@ -41,7 +41,7 @@ export function decorateFrontier(T,root,colliders){
  const kiosk=place('Civic terminal',A.kiosk(),-4.2,0,19,Math.PI/5,[.65,.65]);
  const relay=place('Quantum relay',A.relay(),22,0,19,0,[1,1]);
  const drone=place('Autonomous maintenance drone',A.drone(),7,3.2,8);
- const plantPositions=[[-23,8],[-26,19],[-20,24],[24,23],[25,5],[25,-14],[29,-32],[38,-39],[41,-45],[-27,-23],[-30,-8],[-35,26]];
+ const plantPositions=[[-23,8],[-26,19],[-23,25],[24,23],[25,5],[25,-14],[29,-32],[38,-39],[41,-45],[-27,-23],[-30,-8],[-35,26]];
  for(let i=0;i<plantPositions.length;i++){const [x,z]=plantPositions[i];const p=place('Luma flora',A.alienPlant(),x,0,z,i*2.4);p.scale.setScalar(.7+(i%4)*.22)}
  const targets=[{x:-4.2,z:19,name:'Občanský terminál',note:'Rok 5000 • Elyra, Svaz Aurelia. Občanská síť je v tomto sektoru v nouzovém režimu.'},{x:12,z:23,name:'Kurýrní loď A-17',note:'Civilní antigravitační kurýr. Pilotní rozhraní je zatím uzamčeno; létání přijde v pozdější verzi.'},{x:22,z:19,name:'Kvantový vysílač',note:'Meziplanetární komunikační uzel. Přijímá slabý signál ze soustavy Solaris.'}];
  return {targets,names,update(t){if(!root.visible)return;drone.position.set(7+Math.cos(t*.23)*3,3.25+Math.sin(t*1.1)*.24,8+Math.sin(t*.23)*4);drone.rotation.y=-t*.23;kiosk.userData.holo.rotation.y=t*.7;ship.position.y=.34+Math.sin(t*.9)*.045}}
