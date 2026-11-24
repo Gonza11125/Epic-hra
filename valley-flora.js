@@ -1,15 +1,15 @@
 // Deterministic flora and rock placement for Valley 07, metres in its east/north frame.
 import {valleyLandscape,VALLEY_POINTS,VALLEY_ROUTES} from './elyra-geography.js?v=3';
 export const SPECIES=[
- {id:'aurora',name:'Aurora – deštníkovník',height:13,radius:3.8,solid:.55,band:0},
+ {id:'aurora',name:'Aurora – deštníkovník',height:13,radius:5.3,solid:.55,band:0},
  {id:'spire',name:'Spire – jehlicový věžník',height:17,radius:2.4,solid:.48,band:0},
- {id:'veil',name:'Veil – vějířovec',height:8,radius:3.2,solid:.35,band:0},
+ {id:'veil',name:'Veil – vějířovec',height:8,radius:3.7,solid:.35,band:0},
  {id:'boulder',name:'Čedičový balvan',height:2.8,radius:2.1,solid:1.45,band:0},
  {id:'shrub',name:'Stříbrný keř',height:1.5,radius:1.2,solid:0,band:1},
  {id:'fern',name:'Spirálová kapradina',height:1.8,radius:1.25,solid:0,band:1},
  {id:'fungi',name:'Luminové houby',height:.65,radius:.7,solid:0,band:1},
  {id:'slab',name:'Vrstevnatá skála',height:1.4,radius:1.4,solid:.8,band:1},
- {id:'grass',name:'Azurová tráva',height:.52,radius:.48,solid:0,band:2}];
+ {id:'grass',name:'Azurová tráva',height:.52,radius:.56,solid:0,band:2}];
 const byId=Object.fromEntries(SPECIES.map(s=>[s.id,s])),steps=[22,8,2.8];
 function hash(x,z,seed){let n=Math.imul(x,374761393)^Math.imul(z,668265263)^Math.imul(seed,1274126177);n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295}
 function seg(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz)}
