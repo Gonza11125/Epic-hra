@@ -1,5 +1,5 @@
 // Engine-independent adaptive cube sphere selector and bounded incremental cache.
-import {PLANET,tilePoint,normalize,terrainTile} from './elyra-geography.js?v=1';
+import {PLANET,tilePoint,normalize,terrainTile,surfaceRadiusMeters} from './elyra-geography.js?v=2';
 export const key=t=>[t.face,t.level,t.x,t.y].join('/');
 const R=PLANET.radiusKm;
 export function tileMetric(t,observer,heightKm){
@@ -19,15 +19,19 @@ export function selectTiles(observer,heightKm,{budget=126,maxLevel=12,threshold=
 export function buildSurfaceTile(t,resolution=12){
  const raw=terrainTile(t.face,t.level,t.x,t.y,resolution),{originMeters}=raw,positions=[],normals=[],biomes=raw.biomes.slice(),indices=raw.indices.slice();
  // Render oceans at sea level rather than exposed ocean floor.
- for(let i=0;i<raw.biomes.length;i++){const n=raw.radialNormals.slice(i*3,i*3+3),r=(R+Math.max(0,raw.elevationsKm[i]))*1000;positions.push(...n.map((x,k)=>x*r-originMeters[k]));normals.push(...n)}
+ for(let i=0;i<raw.biomes.length;i++){const n=raw.radialNormals.slice(i*3,i*3+3),r=surfaceRadiusMeters(n);positions.push(...n.map((x,k)=>x*r-originMeters[k]));normals.push(...n)}
+ // Compute outward surface normals before adding skirts, so slopes catch light.
+ const acc=new Float64Array(positions.length);
+ for(let k=0;k<indices.length;k+=3){const [a,b,c]=indices.slice(k,k+3).map(i=>i*3),ux=positions[b]-positions[a],uy=positions[b+1]-positions[a+1],uz=positions[b+2]-positions[a+2],vx=positions[c]-positions[a],vy=positions[c+1]-positions[a+1],vz=positions[c+2]-positions[a+2],nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;for(const i of [a,b,c]){acc[i]+=nx;acc[i+1]+=ny;acc[i+2]+=nz}}
+ const radial=normals.slice();for(let i=0;i<normals.length;i+=3){const l=Math.hypot(acc[i],acc[i+1],acc[i+2]);if(l>1e-10){const sign=acc[i]*radial[i]+acc[i+1]*radial[i+1]+acc[i+2]*radial[i+2]>=0?1:-1;for(let k=0;k<3;k++)normals[i+k]=acc[i+k]/l*sign}}
  // Vertical skirts conceal differences in edge sampling between LOD levels.
  // Not exact mixed-LOD stitching. Actual shared edge vertices remain unchanged.
  const n=resolution+1,edges=[Array.from({length:n},(_,i)=>i),Array.from({length:n},(_,i)=>i*n+n-1),Array.from({length:n},(_,i)=>n*n-1-i),Array.from({length:n},(_,i)=>(n-1-i)*n)];
  const span=tileMetric(t,tilePoint(t.face,t.level,t.x,t.y,.5,.5),1).span;
  const depth=Math.max(3,span*1000*.025,span*span*1000/(R*8));
- for(const edge of edges){const base=positions.length/3;for(const i of edge){const normal=normals.slice(i*3,i*3+3);positions.push(...normal.map((x,k)=>positions[i*3+k]-depth*x));normals.push(...normal);biomes.push(biomes[i])}
+ for(const edge of edges){const base=positions.length/3;for(const i of edge){const normal=radial.slice(i*3,i*3+3);positions.push(...normal.map((x,k)=>positions[i*3+k]-depth*x));normals.push(...normals.slice(i*3,i*3+3));biomes.push(biomes[i])}
  for(let j=0;j<edge.length-1;j++){const a=edge[j],b=edge[j+1],c=base+j,d=c+1;indices.push(a,c,b,b,c,d)}}
- return {originMeters,positions,normals,biomes,indices,skirtDepthMeters:depth};
+ return {originMeters,positions,normals,radial,biomes,indices,skirtDepthMeters:depth};
 }
 export class TileStream{
  constructor({build,dispose=()=>{},maxCache=240}){this.build=build;this.dispose=dispose;this.maxCache=maxCache;this.cache=new Map();this.active=new Set();this.desired=new Map();this.queue=[]}
