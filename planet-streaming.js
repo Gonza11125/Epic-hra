@@ -6,7 +6,7 @@ export function tileMetric(t,observer,heightKm){
  const center=tilePoint(t.face,t.level,t.x,t.y,.5,.5),corners=[[0,0],[1,0],[0,1],[1,1]].map(([u,v])=>tilePoint(t.face,t.level,t.x,t.y,u,v));
  const distance=(a,b)=>Math.hypot(...a.map((x,i)=>x-b[i]))*R;
  const span=Math.max(...corners.map(v=>distance(v,center)))*2;
- const chord=distance(center,observer),near=Math.max(0,chord-span*.58),range=Math.hypot(near,Math.max(.08,heightKm));
+ const chord=distance(center,observer),near=Math.max(0,chord-span*.58),range=Math.hypot(near,Math.max(.001,heightKm));
  return {span,priority:span/range};
 }
 export function selectTiles(observer,heightKm,{budget=126,maxLevel=12,threshold=.8}={}){
