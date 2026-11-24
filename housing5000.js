@@ -16,7 +16,7 @@ export function createResidentialLibrary(T){
   const g=new T.Group(),collisions=[],targets=[],doors=[];const addCol=(x,z,ww,dd)=>collisions.push([x-ww/2,x+ww/2,z-dd/2,z+dd/2]);
   const solid=(m,x,y,z,ww,h,dd)=>{addCol(x,z,ww,dd);return b(g,m,x,y,z,ww,h,dd)};
   b(g,M.floor,0,.045,0,w+.35,.09,d+.35);b(g,M.frame,0,.07,d/2+1.25,w+.8,.12,2.5);
-  roof(g,w,d);glassWall(g,-1,w,d);glassWall(g,1,w,d);addCol(-w/2,0,.2,d);addCol(w/2,0,.2,d);
+  roof(g,w,d);for(const side of [-1,1]){const arch=new T.Shape();arch.moveTo(-w/2+.08,3.0);arch.quadraticCurveTo(-w*.36,3.72,0,4.04);arch.quadraticCurveTo(w*.36,3.72,w/2-.08,3.0);arch.closePath();const geo=new T.ShapeGeometry(arch,16);const material=(side===1?M.glass:M.shell).clone();material.side=T.DoubleSide;mesh(g,geo,material,0,0,side*d/2)}glassWall(g,-1,w,d);glassWall(g,1,w,d);addCol(-w/2,0,.2,d);addCol(w/2,0,.2,d);
   solid(M.shell,0,1.44,-d/2,w,2.88,.2);
   // Front wall includes a true 1.7 m opening; animated panels slide clear.
   const opening=1.8,sideW=(w-opening)/2;
@@ -52,7 +52,7 @@ export function createResidentialLibrary(T){
 export function installHousing(T,root,colliders){
  const group=new T.Group();group.name='Elyra residential quarter';root.add(group);const library=createResidentialLibrary(T),buildings=[],targets=[];
  const specs=[{id:'H-01',title:'AURA',x:-17,z:22,w:8,d:7,variant:'home'},{id:'H-02',title:'NOVA',x:19,z:-21,w:8.6,d:7.2,variant:'home'},{id:'C-01',title:'FORUM',x:-20,z:-20,w:8.5,d:7,variant:'community'}];
- for(const spec of specs){const h=library.habitat(spec);h.group.position.set(spec.x,0,spec.z);group.add(h.group);for(const p of h.collisions)colliders.push([p[0]+spec.x,p[1]+spec.x,p[2]+spec.z,p[3]+spec.z]);for(const t of h.targets)targets.push({...t,x:t.x+spec.x,z:t.z+spec.z});buildings.push({...spec,h})}
+ for(const spec of specs){const h=library.habitat(spec);h.group.position.set(spec.x,0,spec.z);group.add(h.group);for(const p of h.collisions)colliders.push([p[0]+spec.x,p[1]+spec.x,p[2]+spec.z,p[3]+spec.z]);for(const t of h.targets)targets.push({...t,x:t.x+spec.x,z:t.z+spec.z,building:spec.id,category:'housing'});buildings.push({...spec,h})}
  function covered(x,z,pad=0){return buildings.some(b=>Math.abs(x-b.x)<b.w/2+pad&&z>b.z-b.d/2-pad&&z<b.z+b.d/2+2.6+pad)}
  function inside(x,z){return buildings.some(b=>b.h.inside(x-b.x,z-b.z))}
  return {buildings,targets,covered,inside,update(dt,x,z,time,enabled){for(const b of buildings)b.h.update(dt,x-b.x,z-b.z,time,enabled)}}
