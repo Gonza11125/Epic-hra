@@ -39,22 +39,11 @@ export function installVisuals(T,{scene,renderer,camera,sun,hemi,M,box,colliders
  function detail(x,y,z,w,h,d,mat,ry=0,rz=0){if(!batches.has(mat))batches.set(mat,[]);obj.position.set(x,y,z);obj.rotation.set(0,ry,rz);obj.scale.set(w,h,d);obj.updateMatrix();batches.get(mat).push(obj.matrix.clone())}
  // Architectural trim, platform canopy, pitched roof and rail fittings.
  const {stone,iron,rust,cream,brick,green}=materials;
- for(const x of [-19.3,-6.7]){detail(x,1.84,2.19,.32,3.65,.18,cream);detail(x,1.84,-10.16,.32,3.65,.18,cream)}
- detail(-16.9,.27,2.18,5.2,.46,.21,stone);detail(-9.1,.27,2.18,5.2,.46,.21,stone);detail(-13,3.5,2.2,13,.15,.22,cream);detail(-13,3.5,-10.2,13,.15,.22,cream);
- for(const x of [-17,-9]){detail(x,1.51,2.37,2.18,.13,.32,stone);detail(x,2.05,2.36,1.92,.065,.05,iron);detail(x,2.05,2.36,.065,.88,.05,iron)}
- for(const x of [-14.3,-11.7])detail(x,1.48,2.22,.13,2.96,.18,iron);
- const pitch=Math.atan2(2.25,6.5);for(const sign of [-1,1]){const roof=box(-13,5.48,-4+sign*3.26,14.2,.16,7.05,M.roof);roof.rotation.x=sign*pitch}
- function gable(x){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute([x,4.32,-10.7,x,6.55,-4,x,4.32,2.7],3));g.computeVertexNormals();scene.add(new T.Mesh(g,new T.MeshStandardMaterial({color:0xa49e8c,side:T.DoubleSide,roughness:1})))}gable(-19.55);gable(-6.45);
- detail(-15,6.05,-5.4,.72,2,.75,brick);detail(-15,7.05,-5.4,.91,.13,.94,stone);
- for(const z of [-12,-7,-2,3,8]){detail(-4.9,1.78,z,.13,3.56,.13,iron);detail(-4.9,.13,z,.38,.25,.38,stone);detail(-5.7,3.45,z,2.8,.13,.13,iron)}
- detail(-5.5,3.61,-2,3.0,.16,22,M.roof);
- for(let z=-16;z<=12;z+=.55)detail(-4.1,.15,z,.19,.08,.43,cream);
+ // Transit hub geometry is now provided by transitStations.js.
  for(let z=-95;z<=95;z+=1.35)for(const x of [-.85,.85])detail(x,.199,z,.28,.08,.19,rust);
  for(const x of [-.85,.85])detail(x,.322,0,.145,.045,196,M.steel);
  for(let z=-80;z<88;z+=16){detail(3.6,2.7,z,.14,5.4,.14,iron);detail(3.6,5.05,z,.35,.10,.25,iron);detail(2.9,4.67,z,1.8,.07,.07,iron,0,.52)}
  for(const z of [24,-56]){detail(2.8,1.75,z,.12,3.5,.12,iron);detail(2.8,3.1,z,.48,.88,.31,iron);detail(2.8,3.25,z+.17,.27,.27,.04,new T.MeshStandardMaterial({color:0xad4d35,emissive:0x7f2010,emissiveIntensity:.8}));detail(2.8,.15,z,.52,.3,.52,stone)}
- for(const z of [-8,-4]){detail(-7.5,1.22,z,.12,.9,2.5,M.wood);for(const dz of [-.9,.9])detail(-7.5,.9,z+dz,.10,1.3,.10,iron)}
- for(const x of [-17.9,-15.9]){detail(x,1.2,-9.65,.85,2.15,.5,iron);detail(x,1.8,-9.37,.7,.07,.04,cream);detail(x+.24,1.2,-9.36,.05,.19,.06,M.steel)}
  for(const z of [-42,-40,-38,-36,-34,-32])for(const x of [-1.51,1.51]){detail(x,1.85,z,.04,.88,1.32,iron);detail(x*1.02,1.85,z,.045,.70,1.13,M.glass);detail(x*1.035,1.85,z,.045,.72,.045,iron)}
  for(const x of [-1.48,1.48]){detail(x,1.17,-37,.04,.11,13,cream);detail(x,.66,-37,.06,.13,13,iron)}
  // Fine foliage and rocks, placed away from the mission path.
