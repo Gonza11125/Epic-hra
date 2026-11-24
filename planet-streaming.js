@@ -36,7 +36,7 @@ export function buildSurfaceTile(t,resolution=12){
 export class TileStream{
  constructor({build,dispose=()=>{},maxCache=240}){this.build=build;this.dispose=dispose;this.maxCache=maxCache;this.cache=new Map();this.active=new Set();this.desired=new Map();this.queue=[]}
  request(tiles){this.desired=new Map(tiles.map(t=>[key(t),t]));this.queue=[...this.desired].filter(([k])=>!this.cache.has(k));this.commit()}
- commit(){if([...this.desired.keys()].some(k=>!this.cache.has(k)))return false;this.active=new Set(this.desired.keys());this.trim();return true}
+ commit(){if([...this.desired.keys()].some(k=>!this.cache.has(k)))return false;if(this.active.size!==this.desired.size||[...this.desired.keys()].some(k=>!this.active.has(k)))this.active=new Set(this.desired.keys());this.trim();return true}
  tick(limit=2){for(let i=0;i<limit&&this.queue.length;i++){const [k,t]=this.queue.shift();if(!this.cache.has(k))this.cache.set(k,this.build(t))}this.commit();this.trim()}
  trim(){for(const [k,v] of this.cache){if(this.cache.size<=this.maxCache)break;if(!this.active.has(k)&&!this.desired.has(k)){this.cache.delete(k);this.dispose(v)}}}
  get pending(){return this.queue.length}
