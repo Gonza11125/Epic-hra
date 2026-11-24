@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.1 — Planetary terrain streaming
+- `planet-streaming.js`: adaptivní dělení všech šesti stěn koule, rozpočet sektorů, postupné generování (dva sektory za snímek), zachování staré sady do připravení nové, uvolňování nepoužívaných sektorů a lokální souřadnice vzhledem ke kameře. Oceány jsou vykresleny na hladině moře. Přechody LOD používají svislé okrajové pásy (skirts), nikoli přesné propojení triangulace.
+- `planet-explorer.html`: samostatná sonda s dotykovým i klávesovým ovládáním, volitelnou výškou 150 m až 1 600 km, rychlostí 0,03 až 350 km/s a sklonem kamery, dvěma rozpočty LOD (105/165 sektorů), automatickým letem a diagnostickou sítí. Atlas předává vybrané souřadnice. Měřítko je skutečné, rychlosti sondy jsou testovací.
+- 17 144 dílčích kontrol algoritmů (35 konfigurací výběru, úplnost pokrytí koule, absence překryvu rodičů a potomků, geometrie sektorů, bezpečná výměna sad a cache po dokončení přechodu). Cache během přechodu může dočasně překročit cílový limit. Prohlížeč/GPU/iPad a Pages neověřeny; žádná garance bezespárého vizuálního výsledku či FPS.
+- Jde o prototyp letu nad základním terénem; nikoli chůzi postavy, fyzikální gravitaci, detailní vegetaci nebo hotový Unreal projekt. Původní mapy zůstávají oddělené.
+ 
 ## 0.1.4.0 — Elyra planetary foundation
 - `elyra-geography.js`: deterministický kulový svět o poloměru 1 737,4 km (zadaná velikost Měsíce), obvod cca 10 916 km, plocha cca 37,93 milionu km². Reliéf, oceány, teploty, vlhkost, 12 biomů a 4 fiktivní civilizační oblasti. Souřadnice existujících regionů jsou propojeny s geografickým katalogem; Haven leží u generovaného pobřeží.
 - `planet-atlas.html`: samostatný interaktivní glóbus, vrstvy biomů, civilizací a výšek, výběr polohy, sonda obíhající po velké kružnici, skutečný nebo zvýrazněný reliéf. V hlavní hře odkaz z galaktického atlasu. `elyra-planet-v1.json` a zdrojový generátor jsou podklady pro budoucí Unreal migraci, nikoli hotový Unreal projekt.
