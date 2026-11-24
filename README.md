@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.4 — Valley 07 Terrain Pass
+- Authorovaný reliéf Údolí 07 je součástí společné kulové Elyry na 36° N / 18° E, nikoli nová plochá mapa. Hlavní oblast 2,5 × 3,5 km, plynulé přechodové pásmo až 1 km. Dva hřebeny, východní rokle, severní průchod, jižní otevření, chráněná plošina 240 × 240 m pro budoucí osadu. V mřížce 10 m převýšení cca 458 m. Původní kontinenty a klimatická klasifikace zachovány.
+- Tři navržené pěší trasy o celkové délce cca 5,09 km, modelované stoupání západní vyhlídky. Vzorky po cca 2 m na osách tras: max. sklon hlavní 8,65 %, západní 27,31 %, východní 18,84 %. Lokální mapa s polohou, pět volitelných průzkumných startů, nové barevné směsi půdy, luk a skal. Základní barvení je výchozí; úzké cesty mohou v hrubém vzdáleném LOD zanikat.
+- `valley-07.json`: návrhové souřadnice a popis generátoru pro pozdější přenos do Unreal. Renderer a fyzika používají tutéž výškovou funkci. Regionální priorita LOD pro hřebeny, pohyb po povrchu zůstává globální.
+- 4 233 dílčích kontrol: vzorky os tras, převod souřadnic, kolizní výška, geometrické atributy a pět 10s simulací běhu (52 m na každém startu). Testy neprokazují průchodnost každého metru celé trasy, skutečné ovládání ani vizuální výsledek. Browser/GPU/iPad a nasazení Pages neověřeny. Osada, vegetace, voda, obloha a samostatné detailní modely skal ještě nejsou integrovány; zůstává webový prototyp, nikoli Unreal sestavení.
+
 ## 0.1.4.3a — Surface character correction
 - Explorer starts grounded on land by default after detailed terrain loads, with an animated third-person character from the original game, radial orientation, chase camera and ground-aware camera clearance. First person remains selectable; flight is optional. Selecting a named land location enters walking mode.
 - Standard terrain material is default; the experimental triplanar shader is opt-in. Touch strafe controls added. Walk streaming is refreshed every 2 m; max walk LOD 17. The main game atlas links directly to the explorer.
