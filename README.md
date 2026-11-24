@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6.8 — Organická architektura Elyry
+- `organicArchitecture.js`: společná parametrická knihovna dutých střech, zakřiveného obvodového prosklení, oblých vstupních portálů, světelných pásů a přístřešků. Světlá keramická estetika, plynule tvarované obloukové, křídlové, vrstvené a asymetrické profily.
+- Přestavěno 14 přístupných budov: AURA, NOVA, FORUM, ORBIT, IRIS, SOLA, VELA, TERRA, ZENITH, ASTER MARKET, HELIX, VITA, hala TRANSIT 07 a dílna údržby. Půdorysy, interiérové vybavení, vstupy, expediční cíle a dopravní logika zachovány; kolize vycházejí z původních obdélníkových půdorysů.
+- Statická geometrie každého nového pláště sloučena podle materiálu (nejvýše pět skupin v testovaných variantách). 3 608 vzorků výšky střechy a 120 strukturálních kontrol deseti parametrických variant prošlo. Náhradní třídy Three.js ověřují vlastní plochy a indexy, nikoli skutečné vykreslení, triangulaci trubic nebo válců, výkon na iPadu či vizuální shodu s referencemi.
+- Nástupiště, okolní mobiliář, vzdálená silueta města a ostatní infrastruktura zatím používají stávající geometrii. Dalším krokem je vizuální kontrola v prohlížeči a detailní dolaďování podle referencí.
+ 
 ## 0.1.3.6.7 — Jižní obytná čtvrť
 - `residentialQuarter.js`: šest domů ORBIT, SOLA, TERRA, IRIS, VELA a ZENITH ve třech architektonických stylech (oblouková, křídlová a terasovitá střecha), se zařízenými interiéry, automaticky posuvnými dveřmi, adresami a zahradními prvky.
 - Dvě obytné oblasti navazují na Aster Market a Luma Gardens; šest pěších úseků, světelné lemování a šest lamp. Domy a nové chodníky zobrazeny na minimapě. Společná funkce cityClearance brání generování vegetace a kamenů v zastavěné oblasti.
