@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.0 — Elyra planetary foundation
+- `elyra-geography.js`: deterministický kulový svět o poloměru 1 737,4 km (zadaná velikost Měsíce), obvod cca 10 916 km, plocha cca 37,93 milionu km². Reliéf, oceány, teploty, vlhkost, 12 biomů a 4 fiktivní civilizační oblasti. Souřadnice existujících regionů jsou propojeny s geografickým katalogem; Haven leží u generovaného pobřeží.
+- `planet-atlas.html`: samostatný interaktivní glóbus, vrstvy biomů, civilizací a výšek, výběr polohy, sonda obíhající po velké kružnici, skutečný nebo zvýrazněný reliéf. V hlavní hře odkaz z galaktického atlasu. `elyra-planet-v1.json` a zdrojový generátor jsou podklady pro budoucí Unreal migraci, nikoli hotový Unreal projekt.
+- `terrainTile`: šest stěn cube-sphere, hierarchické dlaždice, lokální souřadnice v metrech. 28 800 rovnoměrně plošně rozložených vzorků odhalilo všech 12 biomů a všechny 4 civilizační oblasti; 464 dílčích testů zahrnulo švy, indexy, platné pozice osad, oběh a sousední dlaždice. Neproveden test skutečného vykreslení na iPadu ani nasazení GitHub Pages.
+- Hratelné původní mapy jsou nadále oddělené. Plynulé cestování po povrchu, fyzika, načítání terénu a spojování rozdílných LOD nejsou zatím implementovány. Husté textury, budovy, vegetace a populace se doplní postupně; civilizační oblasti jsou pouze geografické vymezení. Dříve uvedená gravitace 0,96 g je fikční parametr, nikoli fyzikální výsledek výpočtu z nového poloměru.
+ 
 ## 0.1.3.6.8 — Organická architektura Elyry
 - `organicArchitecture.js`: společná parametrická knihovna dutých střech, zakřiveného obvodového prosklení, oblých vstupních portálů, světelných pásů a přístřešků. Světlá keramická estetika, plynule tvarované obloukové, křídlové, vrstvené a asymetrické profily.
 - Přestavěno 14 přístupných budov: AURA, NOVA, FORUM, ORBIT, IRIS, SOLA, VELA, TERRA, ZENITH, ASTER MARKET, HELIX, VITA, hala TRANSIT 07 a dílna údržby. Půdorysy, interiérové vybavení, vstupy, expediční cíle a dopravní logika zachovány; kolize vycházejí z původních obdélníkových půdorysů.
