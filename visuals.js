@@ -40,7 +40,7 @@ export function installVisuals(T,{scene,renderer,camera,sun,hemi,M,box,colliders
  // Architectural trim, platform canopy, pitched roof and rail fittings.
  const {stone,iron,rust,cream,brick,green}=materials;
  for(const x of [-19.3,-6.7]){detail(x,1.84,2.19,.32,3.65,.18,cream);detail(x,1.84,-10.16,.32,3.65,.18,cream)}
- detail(-13,.27,2.18,13,.46,.21,stone);detail(-13,3.5,2.2,13,.15,.22,cream);detail(-13,3.5,-10.2,13,.15,.22,cream);
+ detail(-16.9,.27,2.18,5.2,.46,.21,stone);detail(-9.1,.27,2.18,5.2,.46,.21,stone);detail(-13,3.5,2.2,13,.15,.22,cream);detail(-13,3.5,-10.2,13,.15,.22,cream);
  for(const x of [-17,-9]){detail(x,1.51,2.37,2.18,.13,.32,stone);detail(x,2.05,2.36,1.92,.065,.05,iron);detail(x,2.05,2.36,.065,.88,.05,iron)}
  for(const x of [-14.3,-11.7])detail(x,1.48,2.22,.13,2.96,.18,iron);
  const pitch=Math.atan2(2.25,6.5);for(const sign of [-1,1]){const roof=box(-13,5.48,-4+sign*3.26,14.2,.16,7.05,M.roof);roof.rotation.x=sign*pitch}
@@ -74,14 +74,14 @@ export function installVisuals(T,{scene,renderer,camera,sun,hemi,M,box,colliders
  trunks.castShadow=true;crowns.castShadow=true;grassBlade.castShadow=false;let quality='balanced';
  function setQuality(q){quality=q;renderer.shadowMap.enabled=q==='high';renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.setPixelRatio(Math.min(devicePixelRatio,q==='high'?1.8:q==='low'?1:1.35));renderer.setSize(innerWidth,innerHeight);grassBlade.visible=q!=='low';bushes.visible=q!=='low';particles.visible=q!=='low';scene.traverse(o=>{if(o.isMesh){const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach(m=>m.needsUpdate=true)}})}
  setQuality(mobile?'balanced':'high');
- const fogColor=C(0xaac3c8),dayZen=C(0x397caf),nightZen=C(0x08152f),dayHor=C(0xc6d9d6),nightHor=C(0x28394f),warm=C(0xf2a36c),white=C(0xffeed4),cool=C(0xa3b9e8),cloudColor=C(0x85959c);let overcast=0,fog=.006;
+ const windUniform={value:0};grassBlade.material.onBeforeCompile=shader=>{shader.uniforms.nexusWind=windUniform;shader.vertexShader='uniform float nexusWind;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nfloat phase=instanceMatrix[3].x*.31+instanceMatrix[3].z*.19;\ntransformed.x+=sin(nexusWind*1.7+phase)*.11*max(0.,position.y+.32);\n#endif');};grassBlade.material.needsUpdate=true;const dayHemi=C(0xc7e7ff);const fogColor=C(0xaac3c8),dayZen=C(0x397caf),nightZen=C(0x08152f),dayHor=C(0xc6d9d6),nightHor=C(0x28394f),warm=C(0xf2a36c),white=C(0xffeed4),cool=C(0xa3b9e8),cloudColor=C(0x85959c);let overcast=0,fog=.006;
  function update(time,weather,t,dt){const a=(time-6)/24*Math.PI*2,alt=Math.sin(a),day=clamp((alt+.12)/.72,0,1),night=1-clamp((alt+.18)/.36,0,1),twilight=Math.exp(-Math.pow(alt/.24,2))*(1-night*.62);
  overcast=mix(overcast,weather==='Déšť'? .92:weather==='Mlha'?.75:.18,1-Math.exp(-dt*.8));fog=mix(fog,weather==='Mlha'?.019:weather==='Déšť'?.011:.0058,1-Math.exp(-dt*.65));
- skyU.zenith.value.copy(nightZen).lerp(dayZen,day).lerp(cloudColor,overcast*.42*day);skyU.horizon.value.copy(nightHor).lerp(dayHor,day).lerp(warm,twilight*.55*(1-overcast));skyU.sunDir.value.set(Math.cos(a)*.9,alt,Math.sin(a*.55)*.35+.25).normalize();skyU.sunColor.value.copy(white).lerp(warm,twilight*.8);skyU.night.value=night;skyU.cloud.value=overcast;skyU.clock.value=t;dome.position.copy(camera.position);
+ skyU.zenith.value.copy(nightZen).lerp(dayZen,day).lerp(cloudColor,overcast*.42*day);skyU.horizon.value.copy(nightHor).lerp(dayHor,day).lerp(warm,twilight*.55*(1-overcast));skyU.sunDir.value.set(Math.cos(a)*.9,alt,Math.sin(a*.55)*.35+.25).normalize();skyU.sunColor.value.copy(white).lerp(warm,twilight*.8);skyU.night.value=night;skyU.cloud.value=overcast;skyU.clock.value=t;windUniform.value=t;dome.position.copy(camera.position);
  fogColor.copy(skyU.horizon.value).lerp(cloudColor,overcast*.22*day);scene.fog.color.copy(fogColor);scene.fog.density=fog;scene.background.copy(fogColor);
- hemi.color.copy(cool).lerp(C(0xc7e7ff),day);hemi.groundColor.set(0x536147);hemi.intensity=.22+day*1.36+overcast*.12*day;sun.color.copy(white).lerp(warm,twilight*.8);sun.intensity=Math.max(0,alt)*3.0*(1-overcast*.70)+.035;
+ hemi.color.copy(cool).lerp(dayHemi,day);hemi.groundColor.set(0x536147);hemi.intensity=.22+day*1.36+overcast*.12*day;sun.color.copy(white).lerp(warm,twilight*.8);sun.intensity=Math.max(0,alt)*3.0*(1-overcast*.70)+.035;
  sun.target.position.set(Math.round(camera.position.x/8)*8,0,Math.round(camera.position.z/8)*8);sun.position.copy(sun.target.position).addScaledVector(skyU.sunDir.value,62);sun.position.y=Math.max(6,sun.position.y);
- halo.scale.setScalar(7.2+Math.sin(t*2)*.8);for(const s of shards){const a=s.a+t*s.s;s.o.position.set(Math.cos(a)*s.r,s.h+Math.sin(t+s.a)*.4,Math.sin(a)*s.r);s.o.rotation.set(t*.3+s.a,t*.4,t*.15)}
+ halo.scale.set(7.2+Math.sin(t*2)*.8,7.2+Math.sin(t*2)*.8,1);for(const s of shards){const a=s.a+t*s.s;s.o.position.set(Math.cos(a)*s.r,s.h+Math.sin(t+s.a)*.4,Math.sin(a)*s.r);s.o.rotation.set(t*.3+s.a,t*.4,t*.15)}
  if(particles.visible&&anomaly.visible){for(let i=0;i<240;i++){const a=i*2.399+t*.65,r=.65+(i%19)*.15;pa[i*3]=Math.cos(a)*r;pa[i*3+1]=Math.sin(i*.37+t*.8)*1.7;pa[i*3+2]=Math.sin(a)*r}particleGeo.attributes.position.needsUpdate=true}
  }
  return {update,setQuality,get quality(){return quality}};
