@@ -86,6 +86,7 @@ export const VALLEY_ROUTES=[
  {id:'west',name:'Cesta na západní vyhlídku',points:[[-20,-350],[-160,-490],[-330,-620],[-540,-690],[-700,-630],[-750,-520],[-660,-420]],width:12},
  {id:'east',name:'Cesta do východní rokle',points:[[-20,500],[155,410],[305,365],[460,430],[640,520]],width:10}];
 function pathDistance(x,z,points){let best=Infinity;for(let i=1;i<points.length;i++){const [a,b]=points[i-1],[c,d]=points[i],dx=c-a,dz=d-b,t=clamp(((x-a)*dx+(z-b)*dz)/(dx*dx+dz*dz),0,1);best=Math.min(best,Math.hypot(x-a-t*dx,z-b-t*dz))}return best}
+function routeProfile(x,z,points,heights){let best=Infinity,h=0;for(let i=1;i<points.length;i++){const [a,b]=points[i-1],[c,d]=points[i],dx=c-a,dz=d-b,t=clamp(((x-a)*dx+(z-b)*dz)/(dx*dx+dz*dz),0,1),dist=Math.hypot(x-a-t*dx,z-b-t*dz);if(dist<best){best=dist;h=mix(heights[i-1],heights[i],t)}}return {distance:best,height:h}}
 const gauss=(x,z,cx,cz,sx,sz)=>Math.exp(-(((x-cx)/sx)**2)-((z-cz)/sz)**2);
 export function valleyLandscape(x,z){
  const weight=(1-smooth(clamp((Math.abs(x)-1250)/1000,0,1)))*(1-smooth(clamp((Math.abs(z)-1750)/1000,0,1)));
@@ -104,6 +105,7 @@ export function valleyLandscape(x,z){
  const trail=Math.max(...distances.map((d,i)=>1-smooth(clamp((d-VALLEY_ROUTES[i].width*.5)/12,0,1))));
  // Routes follow the terrain, with smaller-scale roughness attenuated.
  height-=rugged*rough*trail*(1-pad)*.85;
+ const westPath=routeProfile(x,z,VALLEY_ROUTES[1].points,[14.38,30,66,117,161,194,211]);height=mix(height,westPath.height,1-smooth(clamp((westPath.distance-7)/65,0,1)));
  const rock=clamp((hill-55)/255,0,1)*(1-pad)*(1-trail*.65),meadow=clamp(1-rock-pad*.4,0,1);
  const zone=pad>.5?'settlement':x<-420?'west':x>420?'east':z>800?'north':z<-800?'south':'valley';
  return {weight,heightMeters:height,trail,rock,meadow,zone};
