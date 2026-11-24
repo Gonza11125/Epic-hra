@@ -1,5 +1,5 @@
 // NEXUS universe: stable IDs, deterministic data, no rendering dependency.
-import {validateRide} from './passenger.js?v=0136';
+import {validateRide} from './passenger.js?v=01362';
 export const VERSION=4;
 export const UNIVERSE={id:'nexus',galaxies:[{id:'aurelia',name:'Aurelia',systems:[{id:'solaris',name:'Solaris',star:'G2V',bodies:[
 {id:'elyra',name:'Elyra',type:'planet',kind:'Obyvatelná planeta',radiusKm:6310,gravity:0.96,dayHours:27,climate:'Mírné pásmo',color:'#74a99d',orbit:1,regions:[{id:'frontier',name:'Údolí 07',kind:'Pohraniční osada',playable:true,seed:61201},{id:'haven',name:'Pobřeží Haven',kind:'Přírodní rezervace',playable:true,seed:74121},{id:'capital',name:'Nova Aster',kind:'Hlavní město',playable:false,seed:8172}]},
