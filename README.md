@@ -1,4 +1,14 @@
-# NEXUS — One world. Infinite futures.
+# NEXUS — Infinite Civilizations
+
+Infinite worlds. One life. Your choice.
+
+## 0.1.3 — Nový začátek
+- Galaxie Aurelia, soustava Solaris, planeta Elyra, měsíc Nyx, planeta Vesta a stanice Orion. Atlas je informační katalog; lety do vesmíru zatím nejsou implementovány.
+- Dva skutečně průchozí regiony Elyry: Údolí 07 a Haven. Haven nabízí jezero, lesy, výzkumný přístřešek, solární panely a tři volitelné průzkumné body.
+- Tlačítko VESMÍR nebo klávesa V otevře atlas a umožní okamžitý regionální přesun. Poslední pozice v každém regionu a objevy se ukládají.
+- `universe.js`: hierarchie, identifikátory, model hráče, verzované ukládání, migrace a cestování; `regions.js`: samostatný obsah regionu Haven a nebeská tělesa. `visuals.js` zůstává sdílený grafický modul.
+- Staré mise jsou zachovány a volitelné. Uložené hry 0.1.0–0.1.2 se načítají ze starého klíče při prvním spuštění; nový klíč je `nexus-world-v3`.
+- Testy migrace, přesunů, návratu na poslední pozici a ukládání prošly; syntaxe JS zkontrolována. Vizuální a herní test na skutečném iPadu dosud neproveden.
 
 ## 0.1.2 — Světlo na horizontu / Visual Overhaul
 - Samostatný grafický modul `visuals.js`: procedurální obloha se sluncem, oblaky a hvězdami, měnící se nasvícení, plynulá mlha a dvě vrstvy horského panoramatu.
@@ -28,7 +38,7 @@ Webový 3D prototyp první expedice, Three.js r160 / WebGL. Bez sestavování. O
 Settings → Pages → Deploy from a branch → main → /(root) → Save. Očekávaná adresa: https://gonza11125.github.io/Epic-hra/ (po úspěšném nasazení).
 
 ## Roadmap
-0.1.x: průzkum, ovládání, prostředí, interakce a optimalizace. 0.2: živé město. 0.3: ekonomika. 0.4: vlak a cestování. 0.5: stavění a výroba. 0.6: vztahy a NPC. 0.7: anomálie a věda. 0.8: civilizace. 0.9: propojení a optimalizace. 1.0: ucelená hra. 2.0: kooperace a crossplay. Jedná se o cíle, nikoli již hotové funkce.
+0.1: základy postavy, regionů a inventáře. 0.2: živá města a NPC. 0.3: ekonomika, bydlení a stavění. 0.4: lodě a vesmírné lety. 0.5: nové planety a kolonizace. 0.6: politika a civilizace. 0.7: konflikty a bezpečnost. 0.8: mezihvězdný obchod a cestování. 0.9: další galaxie a simulace. 1.0: ucelená hra, následně kooperace a crossplay. Jedná se o cíle, nikoli již hotové funkce.
 
 ## Stav testování
-První vývojový prototyp; fyzická zařízení a kompatibilitu Safari je nutné ověřit. V dalších verzích oddělit simulaci, vstup, renderer a ukládání do samostatných modulů a zavést verzování uložených dat. Multiplayer není zatím implementován.
+První vývojový prototyp; fyzická zařízení a kompatibilitu Safari je nutné ověřit. V dalších verzích dále oddělit simulaci, vstup a renderer; verzování uložených dat je zavedeno v 0.1.3. Multiplayer není zatím implementován.
