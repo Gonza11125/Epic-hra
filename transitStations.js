@@ -1,3 +1,4 @@
+import {createOrganicEnvelope} from './organicArchitecture.js?v=01368';
 // Original year-5000 transit hub. Uses old station footprint to preserve mission compatibility.
 export function buildTransitHub(T,scene,colliders,schedule){
  const group=new T.Group();group.name='Transit Hub 07';scene.add(group);
@@ -7,17 +8,11 @@ export function buildTransitHub(T,scene,colliders,schedule){
  function b(x,y,z,w,h,d,m,solid=false){const o=new T.Mesh(cube,m);o.position.set(x,y,z);o.scale.set(w,h,d);o.castShadow=!m.transparent&&y>.35;o.receiveShadow=!m.transparent;group.add(o);if(solid)colliders.push([x-w/2,x+w/2,z-d/2,z+d/2]);return o}
  function plate(text,sub,x,y,z,w,rot=0){const cv=document.createElement('canvas');cv.width=512;cv.height=128;const a=cv.getContext('2d');a.fillStyle='#112831';a.fillRect(0,0,512,128);a.fillStyle='#a8e8ec';a.font='bold 43px sans-serif';a.textAlign='center';a.fillText(text,256,53);a.fillStyle='#c6d9dd';a.font='22px sans-serif';a.fillText(sub,256,96);const tex=new T.CanvasTexture(cv);tex.colorSpace=T.SRGBColorSpace;const o=new T.Mesh(new T.PlaneGeometry(w,w/4),new T.MeshBasicMaterial({map:tex,side:T.DoubleSide}));o.position.set(x,y,z);o.rotation.y=rot;group.add(o);return o}
  b(-13,.06,-4,13.3,.12,12.4,floor);b(-13,.07,3.7,13.4,.14,3.5,frame);
- b(-13,1.85,-10,13,3.7,.24,shell,true);
- for(const x of [-19.5,-6.5]){b(x,.33,-4,.20,.66,12,frame,true);b(x,3.35,-4,.24,.70,12,shell);for(const z of [-9.85,-6,-2,1.85])b(x,1.93,z,.24,2.7,.17,frame);for(const z of [-8,-4,0])b(x,1.95,z,.055,2.58,3.83,glass);b(x,2.99,-4,.09,.055,11.7,cyan)}
- // Wide accessible entrance with two sliding glazed doors.
- for(const x of [-16.95,-9.05]){b(x,.32,2,5.1,.64,.24,frame,true);b(x,1.92,2,5,2.55,.07,glass);b(x,3.35,2,5.1,.70,.24,shell)}
- for(const x of [-19.44,-14.43,-11.57,-6.56])b(x,1.82,2,.18,3.64,.27,frame);
- b(-13,3.35,2,2.9,.7,.28,shell);
+ colliders.push([-19.5,-6.5,-10.12,-9.88]);
+ for(const x of [-19.5,-6.5])colliders.push([x-.1,x+.1,-10,2]);
+ for(const x of [-16.95,-9.05])colliders.push([x-2.55,x+2.55,1.88,2.12]);
+ createOrganicEnvelope(T,group,{x:-13,z:-4,w:13,d:12,type:'forum',wallTop:3.7,doorWidth:2.8,rise:2.4,overhang:.65});
  const doors=[];for(const side of [-1,1]){const d=b(-13+side*.7,1.47,2.15,1.37,2.92,.09,glass);doors.push({d,side});}
- // Sculptural vault, roof section extruded along the length.
- const shape=new T.Shape();shape.moveTo(-6.9,3.35);shape.quadraticCurveTo(-6.1,5.55,0,5.7);shape.quadraticCurveTo(6.1,5.55,6.9,3.35);shape.lineTo(6.55,3.35);shape.quadraticCurveTo(5.85,5.17,0,5.34);shape.quadraticCurveTo(-5.85,5.17,-6.55,3.35);shape.closePath();
- const roof=new T.Mesh(new T.ExtrudeGeometry(shape,{depth:12.8,bevelEnabled:true,bevelSize:.06,bevelThickness:.06,bevelSegments:2,curveSegments:20}),shell);roof.position.set(-13,0,-10.4);roof.castShadow=true;roof.receiveShadow=true;group.add(roof);
- for(const z of [-10.2,2.24]){const g=new T.Shape();g.moveTo(-6.52,3.54);g.quadraticCurveTo(-5.5,5.13,0,5.32);g.quadraticCurveTo(5.5,5.13,6.52,3.54);g.closePath();const o=new T.Mesh(new T.ShapeGeometry(g,20),new T.MeshStandardMaterial({color:0x78a6ba,transparent:true,opacity:.45,side:T.DoubleSide,depthWrite:false}));o.position.set(-13,0,z);group.add(o)}
  plate('TRANSIT 07','ELYRA / VEŘEJNÁ DOPRAVA',-13,4.28,2.47,5.3);
  for(const x of [-18,-8]){b(x,3.08,-4,.11,.07,11,cyan);b(x,.14,3.55,.07,.04,2.8,cyan)}
  for(const z of [-8,-4]){b(-8.1,.30,z,1.0,.6,2.3,frame,true);b(-8.1,.68,z,1,.15,2.3,seat);b(-7.68,1.01,z,.20,.63,2.3,seat)}
