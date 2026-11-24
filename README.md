@@ -2,6 +2,13 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.4 — Transit 07
+- `transitStations.js`: přestavěná původní stanice se zakřivenou střechou, prosklením, automatickými dveřmi, čekárnou, informačním pultem a dvěma nástupišti. Původní expediční rádio je zachováno.
+- `transitSchedule.js`: šest stanic a čtyři plánované okružní linky M1, A2, O1 a S4. Výpočet odjezdů, příjezdů, čekání, pořadí zastávek, intervalů a přechodu přes půlnoc.
+- Odjezdová tabule v hale se aktualizuje podle místního herního času; interakcí POUŽÍT/E lze zobrazit přehled odjezdů a tras celé sítě. V panelu je čas pozastaven. Linky jsou zatím plánované, nejezdí po nich funkční vozidla.
+- Pět kontrol jádra jízdních řádů prošlo, syntaxe změněných skriptů zkontrolována. GPU a skutečný iPad neověřeny.
+- Další milníky: provozní data, skutečné nastupování a jízda, orbitální shuttle, stanice Orion a přestupy. Kulatá planeta bude samostatný prototyp s pohybem po sféře, lokální gravitací, streamingem terénu a testem návratu na výchozí místo. Stávající regiony jsou stále malé rovinné mapy; obcházení planety zatím není možné.
+
 ## 0.1.3.3 — Architektura budoucnosti
 - `housing5000.js`: znovupoužitelná knihovna modulárních obytných budov se zakřivenou střechou, panoramatickým prosklením, terasou, automatickými posuvnými dveřmi a interiéry.
 - Údolí 07: dva obytné moduly AURA (H-01) a NOVA (H-02) a komunitní centrum FORUM (C-01). V interiérech jsou lůžka, kuchyňské moduly, sedačky, stoly, osvětlení a informační panely.
