@@ -2,6 +2,13 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.3 — Realistic Terrain
+- `elyra-geography.js`: nový deterministický výškový detail v pěti měřítkách. Základní kontinenty, pobřeží, biomy, civilizace a souřadnice osad se nemění; detail je plynule zeslaben u pobřeží. `surfaceRadiusMeters` je společný zdroj výšek pro renderer i fyziku.
+- `planet-streaming.js`: geometrické normály vypočtené ze skutečných sklonů terénu, radiální normály zachovány pro projekci textur a okrajové pásy. `planet-physics.js` používá identické detailní vrcholy pro průsečík s povrchem.
+- `terrain-materials.js`: čtyři procedurální periodické výškové vzory (skála, půda, písek, led/sníh), triplanární projekce, materiálové směsi podle biomu a sklonu, drobný bump a proměnná drsnost. Blízký detail se zeslabuje se vzdáleností; periodická fáze je nezávislá na plovoucím počátku kamery. V exploreru přepínač textur a export čtyř šedotónových map jako PNG 1024 × 256 pro další zpracování v Unreal.
+- 4 468 dílčích kontrol prošlo: zachování geografie, výšky hladiny, geometrické atributy a indexy, orientace normál, chůze a skok, periodicita textur, materiálové váhy a fáze. Ve 720 vzorcích byl zaznamenaný detail reliéfu přibližně −64 až +124 m oproti původnímu povrchu. Odchylka detailní analytické výšky a průsečíku polygonálního povrchu na šesti testovaných místech osad nejvýše cca 1,3 mm.
+- Kód a data jsou nahrány na GitHub, nikoli ověřeny skutečnou kompilací GLSL nebo vykreslením na iPadu. Výkon, nasazení Pages a vizuální kvalita přechodů LOD zůstávají neověřené. Export neobsahuje kompletní fotorealistické PBR materiály ani hotové assety Unreal. Modely vegetace, balvany, řeky a integrace měst jsou následující etapy.
+
 ## 0.1.4.2 — Radial gravity and surface locomotion
 - `planet-physics.js`: nezávislá fyzika chůze, běhu a skoku na kouli, radiální gravitace (fikční parametr Elyry 0,96 g na referenčním poloměru), transport směru pohybu po velké kružnici, měření polohy v metrech, zamezení chůze na oceán a na prudké výškové skoky. Kolize podlahy používá průsečík s trojúhelníkem skutečně aktivní dlaždice bez skirtů.
 - `planet-explorer.html`: přepínání režimu sondy a chůze první osobou, přistání až po načtení terénu alespoň LOD 13, tlačítka běhu a skoku na dotyku, W/S, A/D, Q/E, Shift, mezerník na klávesnici. Logaritmický depth buffer a lokální počátek u kamery pro blízký terén. Rozpočet chůze 165/225 dlaždic, maximální LOD 18.
