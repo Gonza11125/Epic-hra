@@ -24,9 +24,9 @@ export function buildTransitHub(T,scene,colliders,schedule){
  b(-18.35,.46,-3,.85,.92,2.2,frame,true);b(-18.35,.96,-3,.9,.10,2.3,shell);plate('INFO','SÍŤ SOLARIS',-18.34,1.65,-2.52,1.15,Math.PI/2);
  // Long M1 boarding platform and contrasting A2 apron.
  const platformBlue=mat(0x2349b1,.45,.35),platformOrange=mat(0xf57922,.43,.25),deck=mat(0x9fbbca,.7,.2);
- for(const [x,number,label,len,accent,center] of [[-3.55,'01','MAGLEV M1',44,platformBlue,0],[3.6,'02','MAGLEV M2',44,platformBlue,0],[15.4,'03','ANTIGRAV',18,platformOrange,10]]){
-  b(x,.10,center,2.65,.20,len,deck);b(x,.205,center,2.62,.035,len,accent);b(x,.23,center,2.1,.035,len-.35,deck);
-  for(const side of [-1,1])b(x+side*1.22,.26,center,.065,.035,len-.4,cyan);
+ for(const [x,number,label,len,accent,center] of [[-3.55,'01','MAGLEV M1',29,platformBlue,0],[3.6,'02','MAGLEV M2',29,platformBlue,0],[15.4,'03','ANTIGRAV',18,platformOrange,10]]){
+  const y=number==='03'?.24:.60;b(x,y/2,center,2.65,y,len,deck);b(x,y+.015,center,2.62,.025,len,accent);b(x,y+.03,center,2.1,.025,len-.35,deck);
+  for(const side of [-1,1])b(x+side*1.22,y+.05,center,.065,.035,len-.4,cyan);
   for(const dz of [-len/2+2,0,len/2-2]){b(x,1.83,center+dz,.15,3.66,.15,frame);b(x,3.72,center+dz,2.8,.15,.18,accent)}
   b(x,3.85,center,2.9,.17,len,shell);b(x,3.68,center,.07,.055,len-.5,cyan);for(const dz of [-len/2+2,len/2-2])plate(number+' / '+label,'NÁSTUPIŠTĚ',x,3.0,center+dz,2.25,dz<0?Math.PI:0);
  }
