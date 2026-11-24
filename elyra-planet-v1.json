@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "planet": {
+    "id": "elyra",
+    "name": "Elyra",
+    "radiusKm": 1737.4,
+    "seed": 61201,
+    "dayHours": 27,
+    "seaLevelKm": 0,
+    "maxElevationKm": 7.2,
+    "minElevationKm": -5.2,
+    "revision": 1
+  },
+  "coordinateSystem": "unit vector [cos(lat)*cos(lon),sin(lat),cos(lat)*sin(lon)]; degrees; km",
+  "biomes": [
+    {
+      "id": "ocean",
+      "name": "Oceán",
+      "color": "#224e78"
+    },
+    {
+      "id": "shelf",
+      "name": "Pobřežní vody",
+      "color": "#378b9e"
+    },
+    {
+      "id": "ice",
+      "name": "Polární led",
+      "color": "#dce9ec"
+    },
+    {
+      "id": "tundra",
+      "name": "Tundra",
+      "color": "#a2adab"
+    },
+    {
+      "id": "boreal",
+      "name": "Chladný les",
+      "color": "#526f79"
+    },
+    {
+      "id": "temperate",
+      "name": "Mírný les",
+      "color": "#507f6e"
+    },
+    {
+      "id": "grass",
+      "name": "Travnatá krajina",
+      "color": "#91a676"
+    },
+    {
+      "id": "desert",
+      "name": "Poušť",
+      "color": "#c3a475"
+    },
+    {
+      "id": "savanna",
+      "name": "Suchá savana",
+      "color": "#b5b07c"
+    },
+    {
+      "id": "tropical",
+      "name": "Tropický les",
+      "color": "#397d60"
+    },
+    {
+      "id": "mountain",
+      "name": "Vysoké hory",
+      "color": "#9994a1"
+    },
+    {
+      "id": "snow",
+      "name": "Horský sníh",
+      "color": "#e0e3ea"
+    }
+  ],
+  "civilizations": [
+    {
+      "id": "union",
+      "name": "Svaz Elyry",
+      "color": "#72b9e8",
+      "lat": 36,
+      "lon": 18,
+      "radius": 37
+    },
+    {
+      "id": "meridian",
+      "name": "Meridiánské společenství",
+      "color": "#e8b46c",
+      "lat": 1,
+      "lon": -112,
+      "radius": 38
+    },
+    {
+      "id": "aurora",
+      "name": "Aurorská konfederace",
+      "color": "#b8a0e6",
+      "lat": -36,
+      "lon": 122,
+      "radius": 35
+    },
+    {
+      "id": "frontier",
+      "name": "Nezávislé pohraničí",
+      "color": "#92c9a0",
+      "lat": 12,
+      "lon": 104,
+      "radius": 27
+    }
+  ],
+  "locations": [
+    {
+      "id": "frontier",
+      "name": "Údolí 07",
+      "kind": "osada",
+      "lat": 36,
+      "lon": 17.999999999999996,
+      "biome": "boreal"
+    },
+    {
+      "id": "haven",
+      "name": "Haven",
+      "kind": "pobřežní oblast",
+      "lat": 33.25,
+      "lon": 17.5,
+      "biome": "temperate"
+    },
+    {
+      "id": "capital",
+      "name": "Nova Aster",
+      "kind": "hlavní město",
+      "lat": 32,
+      "lon": 12.999999999999995,
+      "biome": "temperate"
+    },
+    {
+      "id": "meridian-hub",
+      "name": "Meridiánské společenství",
+      "kind": "plánované centrum",
+      "lat": 1,
+      "lon": -112,
+      "biome": "savanna"
+    },
+    {
+      "id": "aurora-hub",
+      "name": "Aurorská konfederace",
+      "kind": "plánované centrum",
+      "lat": -36,
+      "lon": 122,
+      "biome": "boreal"
+    },
+    {
+      "id": "frontier-hub",
+      "name": "Nezávislé pohraničí",
+      "kind": "plánované centrum",
+      "lat": 11,
+      "lon": 105.76446907418108,
+      "biome": "tropical"
+    }
+  ],
+  "algorithm": "elyra-geography.js revision 1; sample(unitDirection)",
+  "terrain": {
+    "projection": "cube sphere",
+    "faces": 6,
+    "subdivision": "quadtree",
+    "units": "metres relative to tile origin",
+    "generator": "terrainTile(face,level,x,y,resolution)",
+    "mixedLodStitching": false
+  }
+}
