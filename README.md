@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.2 — Radial gravity and surface locomotion
+- `planet-physics.js`: nezávislá fyzika chůze, běhu a skoku na kouli, radiální gravitace (fikční parametr Elyry 0,96 g na referenčním poloměru), transport směru pohybu po velké kružnici, měření polohy v metrech, zamezení chůze na oceán a na prudké výškové skoky. Kolize podlahy používá průsečík s trojúhelníkem skutečně aktivní dlaždice bez skirtů.
+- `planet-explorer.html`: přepínání režimu sondy a chůze první osobou, přistání až po načtení terénu alespoň LOD 13, tlačítka běhu a skoku na dotyku, W/S, A/D, Q/E, Shift, mezerník na klávesnici. Logaritmický depth buffer a lokální počátek u kamery pro blízký terén. Rozpočet chůze 165/225 dlaždic, maximální LOD 18.
+- 1 336 dílčích kontrol fyziky a geometrie: 22 kombinací polohy a rozpočtu, inverze souřadnic přes hrany a póly, velikost a směr gravitace, výška skoku cca 1,03 m a běh 15,6 m za 3 s v rovinatém testu, zamezení průchodu zakázanou oblastí. Syntaktické kontroly prošly. Prohlížeč, iPad, GPU, Pages a vizuální návaznost při přechodech LOD nebyly testovány.
+- Zatím pouze základní pěší prototyp v exploreru, bez animovaného těla, plavání, kompletní kolizní fyziky a detailního terénu. Přechod na nativní Unreal projekt a integrace původních osad do povrchu zbývají.
+ 
 ## 0.1.4.1 — Planetary terrain streaming
 - `planet-streaming.js`: adaptivní dělení všech šesti stěn koule, rozpočet sektorů, postupné generování (dva sektory za snímek), zachování staré sady do připravení nové, uvolňování nepoužívaných sektorů a lokální souřadnice vzhledem ke kameře. Oceány jsou vykresleny na hladině moře. Přechody LOD používají svislé okrajové pásy (skirts), nikoli přesné propojení triangulace.
 - `planet-explorer.html`: samostatná sonda s dotykovým i klávesovým ovládáním, volitelnou výškou 150 m až 1 600 km, rychlostí 0,03 až 350 km/s a sklonem kamery, dvěma rozpočty LOD (105/165 sektorů), automatickým letem a diagnostickou sítí. Atlas předává vybrané souřadnice. Měřítko je skutečné, rychlosti sondy jsou testovací.
