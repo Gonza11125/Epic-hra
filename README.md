@@ -2,6 +2,13 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.5 — Živá doprava
+- `transitSchedule.js`: deterministická simulace polohy každého spoje, příjezdů, minutového pobytu v mezilehlých stanicích, obratu na konečné a dalšího odjezdu. Funguje přes půlnoc a nezávisle na právě navštíveném regionu, pokud běží herní čas.
+- `transitVehicles.js`: nové procedurální modely maglevu M1 a antigravitačního shuttle A2. Viditelné příjezdy, odjezdy a posuvné panely dveří. M1 je vykreslován v Údolí 07 i Haven, A2 v Údolí 07. V Haven přibyla zkušební trať a nástupiště.
+- Odjezdová tabule a mapa reagují na stav dopravy; herní čas nyní běží i při otevřené tabuli. Vozidlo stojící ve stanici lze prozkoumat, zatím do něj nelze nastoupit. Vzdálené úseky jsou simulovány datově, ne souvislým 3D terénem. Orbitální a lunární linky jsou stále plánované, bez viditelných lodí.
+- 11 kontrol jízdního řádu a stavů vozidel prošlo; syntaxe změněných skriptů zkontrolována. Vykreslování a výkon na skutečném iPadu dosud neověřeny.
+- Další verze 0.1.3.6: skutečné nastoupení, přeprava cestujícího a vystoupení v dostupném regionu. Kulatá planeta zůstává samostatným technologickým milníkem.
+
 ## 0.1.3.4 — Transit 07
 - `transitStations.js`: přestavěná původní stanice se zakřivenou střechou, prosklením, automatickými dveřmi, čekárnou, informačním pultem a dvěma nástupišti. Původní expediční rádio je zachováno.
 - `transitSchedule.js`: šest stanic a čtyři plánované okružní linky M1, A2, O1 a S4. Výpočet odjezdů, příjezdů, čekání, pořadí zastávek, intervalů a přechodu přes půlnoc.
