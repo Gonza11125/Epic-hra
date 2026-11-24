@@ -1,3 +1,4 @@
+import {valleyWater} from './valley-waters.js';
 // Deterministic flora and rock placement for Valley 07, metres in its east/north frame.
 import {valleyLandscape,VALLEY_POINTS,VALLEY_ROUTES} from './elyra-geography.js?v=3';
 export const SPECIES=[
@@ -13,7 +14,7 @@ export const SPECIES=[
 const byId=Object.fromEntries(SPECIES.map(s=>[s.id,s])),steps=[22,8,2.8];
 function hash(x,z,seed){let n=Math.imul(x,374761393)^Math.imul(z,668265263)^Math.imul(seed,1274126177);n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295}
 function seg(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz)}
-export function clearance(x,z,r=0){if(Math.abs(x)<128+r&&Math.abs(z)<128+r)return false;for(const p of VALLEY_POINTS)if(Math.hypot(x-p.x,z-p.z)<9+r)return false;for(const route of VALLEY_ROUTES)for(let i=1;i<route.points.length;i++)if(seg(x,z,route.points[i-1],route.points[i])<route.width/2+3+r)return false;return true}
+export function clearance(x,z,r=0){if((valleyWater(x,z)?.edge??-Infinity)>-r)return false;if(Math.abs(x)<128+r&&Math.abs(z)<128+r)return false;for(const p of VALLEY_POINTS)if(Math.hypot(x-p.x,z-p.z)<9+r)return false;for(const route of VALLEY_ROUTES)for(let i=1;i<route.points.length;i++)if(seg(x,z,route.points[i-1],route.points[i])<route.width/2+3+r)return false;return true}
 export function candidate(band,i,j){const step=steps[band],n=seed=>hash(i,j,seed+band*113),x=(i+.13+.74*n(1))*step,z=(j+.13+.74*n(2))*step;if(Math.abs(x)>1240||Math.abs(z)>1740)return null;const v=valleyLandscape(x,z),slope=Math.hypot(valleyLandscape(x+1,z).heightMeters-valleyLandscape(x-1,z).heightMeters,valleyLandscape(x,z+1).heightMeters-valleyLandscape(x,z-1).heightMeters)/2;let id,prob;
  const grove=.5+.25*Math.sin(x/83+Math.sin(z/90))+.25*Math.cos(z/137-x/178),r=n(4);
  if(band===0){prob=.16+grove*.58;if(v.rock>.52||slope>.55){id=r<.78?'boulder':'spire';prob=.32+v.rock*.38}else{id=r<.45?'aurora':r<.76?'spire':r<.92?'veil':'boulder'}}

@@ -2,6 +2,18 @@
 
 Infinite worlds. One life. Your choice.
 
+## Unreal Engine 5 pro Windows • Údolí 07
+
+Zdrojový projekt je v [Unreal/Nexus](Unreal/Nexus/README.md). Po rozbalení celého archivu spusť `Unreal/Nexus/Start-Nexus.cmd`. Při prvním otevření vznikne editovatelná mapa s terénem 2,5 × 3,5 km, devíti původními druhy flóry a skal, obytným modulem a pobřežní sondou. Součástí vývojové verze jsou nativní pohyb, dvě kamery, deník průzkumu a save/load. Windows sestavení a hraný průchod v Unrealu čekají na ověření na cílovém PC.
+
+## Web 0.1.4.7 • Living Waters
+
+V jižní části údolí přibylo jezírko s přítokem a odtokem. Terén i kolizní podklad používají stejnou úpravu břehů. Přímo u vody lze začít výběrem **Údolí 07 · Jižní břeh jezírka**. Průzkumník má ruční uložení a načtení globální pěší polohy, směru a kamery v samostatném slotu.
+
+Ověření proti výchozímu commitu `bdadc5d` a na pracovní verzi proběhlo v desktopovém Chromiu se softwarovým WebGL. Otevřela se osada i atlas, postava přistála a reagovala na klávesnici. Kontrola zahrnula přepnutí kamery a textur. Na upravené verzi se po obnově stránky načetla uložená pozice mimo start a první osoba. Postava ušla 36,1 m z jižního břehu směrem do jezírka. Prohlížeč během těchto testů nehlásil chybu JavaScriptu ani shaderu. Výkon fyzické grafické karty a iPad čekají na zařízení.
+
+Test dat spustíš příkazem `node tools/check-valley.mjs` (Node 22+). Kontroluje 88 101 bodů nativního exportu, maximální rozdíl výšky 5 cm, souvislý spád vodní trasy, zachování pěších cest a oddělené sloty uložených her. Webový průchod lze opakovat skriptem `tools/check-web.cjs` s Playwrightem a Chromiem. Podrobnosti pro přípravu nativní scény a její první průchod jsou v návodu projektu.
+
 ## 0.1.4.6 — Cinematic Atmosphere
 - `planet-atmosphere.js`: planetární směr slunce, 27hodinový den, místní čas podle zeměpisné délky, plynulá změna oblohy, barvy a intenzity světla, procedurální mraky a hvězdy, atmosférický opar mizící ve výšce. Výchozí denní cyklus je zrychlený (0,035 herní hodiny za sekundu simulace). Svítání/den/západ/noc jsou pevné místní časové předvolby, nikoli astronomické výpočty východu pro každou šířku. Tři volby oblačnosti.
 - `valley-nature.js`: instancované rostliny mají shaderové kývání ve větru; kameny ne. Ve vysoké kvalitě je během chůze za dne povolena lokální stínová mapa 1024² s blízkými stínícími modely vegetace a postavy; terén přijímá stíny. Mobilní režim dynamické stíny vypíná. Nejde o plnohodnotnou volumetrickou atmosféru nebo stíny všech hor.

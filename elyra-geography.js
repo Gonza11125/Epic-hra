@@ -1,3 +1,4 @@
+import {valleyWater,sculptBank} from './valley-waters.js';
 // ELYRA: deterministic planet-wide geography, independent of any graphics engine.
 // All positions are unit Cartesian directions, all physical distances in km.
 export const PLANET={id:'elyra',name:'Elyra',radiusKm:1737.4,seed:61201,dayHours:27,seaLevelKm:0,maxElevationKm:7.2,minElevationKm:-5.2,revision:1};
@@ -108,7 +109,7 @@ export function valleyLandscape(x,z){
  const westPath=routeProfile(x,z,VALLEY_ROUTES[1].points,[14.38,30,66,117,161,194,211]);height=mix(height,westPath.height,1-smooth(clamp((westPath.distance-7)/65,0,1)));
  const rock=clamp((hill-55)/255,0,1)*(1-pad)*(1-trail*.65),meadow=clamp(1-rock-pad*.4,0,1);
  const zone=pad>.5?'settlement':x<-420?'west':x>420?'east':z>800?'north':z<-800?'south':'valley';
- return {weight,heightMeters:height,trail,rock,meadow,zone};
+ return {weight,heightMeters:sculptBank(height,valleyWater(x,z)),trail,rock,meadow,zone};
 }
 export function valleyPointInfo(p){const q=valleyCoordinates(p),v=valleyLandscape(q.x,q.z);return {...q,...v}}
 export function valleyManifest(){return {...VALLEY,baseElevationMeters:VALLEY_BASE,points:VALLEY_POINTS,routes:VALLEY_ROUTES,coordinateSystem:'local east/north metres on Elyra sphere',generator:'elyra-geography.js?v=3'}}
