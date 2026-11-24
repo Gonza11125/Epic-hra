@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6.2 — Kolosy Elyry
+- Dva fyzicky oddělené hladké magnetické koridory v Údolí 07 i Haven, s protisměrnými linkami M1 a M2 a samostatnými jízdními řády. Obě linky přepravují hráče mezi dostupnými regiony. M2 má v Údolí nástupiště 02, A2 přesunuto na 03. Ve vzdálených úsecích zůstává krajina simulována.
+- `monuments5000.js`: dvě monumentální brány vysoké přibližně 32 m, vzdálená silueta devíti věží o výšce 72–124 m, energetický prstenec a větší nebeská tělesa. Věže za hranicí mapy jsou vizuální kulisa, nikoliv zpřístupněné město.
+- `player5000.js`: první samostatný 3D model hráče v expedičním obleku, animace končetin při chůzi a běhu, kamera třetí osoby s přiblížením při překážce. C na PC nebo tlačítko 1. OS./3. OS. na dotykovém zařízení; preference se ukládá. Kabina vlaku zatím používá první osobu.
+- 6 kontrol protisměrného jízdního řádu a 4 kontroly M2 nastupování, ukládání a výstupu prošly. Syntaxe upravených modulů ověřena; skutečné vykreslení, kolize a výkon na iPadu dosud neověřeny. Kulatá planeta zůstává plánovaným milníkem.
+
 ## 0.1.3.6.1 — Dopravní design 5000
 - M1 Aurora Maglev: tři propojené články, nominální délka 38,4 m, aerodynamická čela, panoramatické pásy oken, dvojité posuvné dveřní panely a levitační moduly. Bílý, sytě tyrkysový, modrý a fialový lak.
 - A2 Solaris Cityliner: nominální délka 10,8 m, široké prosklené čelo, výrazné oranžové a modré prvky, dveře a čtyři levitační moduly.
