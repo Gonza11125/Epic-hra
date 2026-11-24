@@ -2,6 +2,14 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6.1 — Dopravní design 5000
+- M1 Aurora Maglev: tři propojené články, nominální délka 38,4 m, aerodynamická čela, panoramatické pásy oken, dvojité posuvné dveřní panely a levitační moduly. Bílý, sytě tyrkysový, modrý a fialový lak.
+- A2 Solaris Cityliner: nominální délka 10,8 m, široké prosklené čelo, výrazné oranžové a modré prvky, dveře a čtyři levitační moduly.
+- Klasické koleje, pražce, troleje a staré signály odstraněny z Údolí 07, Haven i simulovaného okolí kabiny. M1 využívá hladkou magnetickou desku se světelnými indukčními segmenty. Nástupiště M1 prodlouženo na 44 m; nástupní body odpovídají třem článkům.
+- `transport-lab.html`: samostatný 3D prohlížeč stejných modelů s rotací, zoomem a ovládáním dveřních panelů. https://gonza11125.github.io/Epic-hra/transport-lab.html
+- Jízdní řád a stav cestujícího zachovány. Interiér je zatím samostatná kabina, nikoli průchozí souprava všech tří článků. A2 zatím bez přepravy hráče.
+- Syntaxe změněných JS a prohlížeče ověřena; skutečný vizuální test v prohlížeči a na iPadu zatím neproveden.
+
 ## 0.1.3.6 — Cestující
 - M1 je dostupný pro nastupování v Údolí 07 a Haven během stání. Výstup automaticky v druhém dostupném regionu, pokud jej cestující nezruší; ruční výstup je možný ve zpřístupněné stanici.
 - `passenger.js`: samostatná 3D kabina s uličkou, sedadly, panoramatickými okny, animovanou krajinou a palubním displejem. Jízda trvá podle jízdního řádu, vzdálená krajina je zatím vizuální simulace, ne souvislá planeta.
