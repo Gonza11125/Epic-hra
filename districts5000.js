@@ -1,3 +1,4 @@
+import {createOrganicEnvelope} from './organicArchitecture.js?v=01368';
 // Valley 07: reusable civic architecture and a single authoritative district plan.
 export const DISTRICTS=[
  {id:'market',name:'Aster Market',x:-39,z:16,w:22,d:24},
@@ -23,19 +24,16 @@ export function installDistricts(T,root,colliders){
  const targets=[],buildings=[],spinners=[],lights=[];
  function solid(p,x,z,w,d){colliders.push([p.position.x+x-w/2,p.position.x+x+w/2,p.position.z+z-d/2,p.position.z+z+d/2])}
  function structure(spec){const {x,z,w,d,name,kind}=spec,p=new T.Group();p.position.set(x,0,z);group.add(p);buildings.push(spec);
-  b(p,tile,0,.065,0,w,.13,d);b(p,shell,0,1.75,-d/2,w,3.5,.2);solid(p,0,-d/2,w,.2);
-  for(const side of [-1,1]){const xx=side*w/2;b(p,steel,xx,.38,0,.18,.76,d);b(p,glass,xx,1.9,0,.06,2.28,d);b(p,shell,xx,3.3,0,.22,.5,d);solid(p,xx,0,.2,d);for(const zz of [-d/2,-d/6,d/6,d/2])b(p,steel,xx,1.75,zz,.24,3.5,.15);
-   const ww=(w-2.8)/2,cx=side*(1.4+ww/2);b(p,steel,cx,.35,d/2,ww,.7,.2);b(p,glass,cx,1.9,d/2,ww,2.4,.065);solid(p,cx,d/2,ww,.2);b(p,shell,cx,3.3,d/2,ww,.5,.22);b(p,steel,side*1.4,1.5,d/2,.15,3,.2);}
-  b(p,shell,0,3.3,d/2,2.8,.5,.22);
-  const sh=new T.Shape();sh.moveTo(-w/2-.45,3.45);sh.quadraticCurveTo(-w*.28,5.7,0,5.7);sh.quadraticCurveTo(w*.28,5.7,w/2+.45,3.45);sh.lineTo(w/2,3.45);sh.quadraticCurveTo(w*.25,5.3,0,5.3);sh.quadraticCurveTo(-w*.25,5.3,-w/2,3.45);sh.closePath();mesh(p,new T.ExtrudeGeometry(sh,{depth:d+.7,bevelEnabled:false,curveSegments:16}),shell,0,0,-d/2-.35);
-  for(const zz of [-d/2-.13,d/2+.13]){const sh2=new T.Shape();sh2.moveTo(-w/2,3.45);sh2.quadraticCurveTo(-w*.25,5.3,0,5.3);sh2.quadraticCurveTo(w*.25,5.3,w/2,3.45);sh2.closePath();mesh(p,new T.ShapeGeometry(sh2,16),new T.MeshStandardMaterial({color:0x82acbe,transparent:true,opacity:.45,depthWrite:false,side:T.DoubleSide}),0,0,zz)}
+  b(p,tile,0,.065,0,w,.13,d);solid(p,0,-d/2,w,.2);
+  for(const side of [-1,1]){solid(p,side*w/2,0,.2,d);const ww=(w-2.8)/2;solid(p,side*(1.4+ww/2),d/2,ww,.2)}
+  createOrganicEnvelope(T,p,{w,d,type:kind==='TRŽNICE'?'market':kind==='VÝZKUMNÝ ÚSTAV'?'helix':'vita',wallTop:3.5,doorWidth:2.8,rise:kind==='VÝZKUMNÝ ÚSTAV'?2.4:2.15});
   sign(p,name,kind,0,4.05,d/2+.4,Math.min(w*.8,5.8));
   for(const xx of [-w*.33,w*.33]){b(p,glow,xx,3.21,0,.07,.06,d*.9);b(p,paving,xx,.065,d/2+1.1,w*.25,.12,2.2)}
   const counterZ=-d/2+1.2;b(p,steel,0,.55,counterZ,w*.57,1.1,.8);b(p,shell,0,1.14,counterZ,w*.59,.09,.9);solid(p,0,counterZ,w*.57,.9);
   for(const xx of [-w*.32,w*.32]){b(p,seat,xx,.43,0,1.1,.3,2.4);b(p,steel,xx,.19,0,.95,.32,2.2);solid(p,xx,0,1.1,2.4)}
   for(const xx of [-w*.19,0,w*.19]){b(p,steel,xx,1.45,counterZ,.76,.48,.12);b(p,glow,xx,1.47,counterZ+.08,.62,.32,.025)}
   if(kind==='VÝZKUMNÝ ÚSTAV'){const roofRing=mesh(p,new T.TorusGeometry(1.6,.17,10,40),steel,0,6.8,-.8);roofRing.rotation.x=.45;mesh(p,orb,glow,0,6.8,-.8,.65,.65,.65);b(p,steel,0,5.65,-.8,.85,.7,.85);const ring=mesh(p,new T.TorusGeometry(.68,.07,8,32),violet,0,2.1,counterZ-.22);ring.rotation.x=.6;spinners.push(ring);mesh(p,orb,glow,0,2.1,counterZ-.22,.29,.29,.29)}
-  if(kind==='TRŽNICE'){for(const side of [-1,1]){b(p,steel,side*5.8,2.1,d/2+2,.12,4.2,.12);solid(p,side*5.8,d/2+2,.2,.2);b(p,steel,side*3.1,4.08,d/2+1.65,5.3,.13,3.45);b(p,glow,side*3.1,4.01,d/2+3.28,5.2,.055,.055)}for(let i=0;i<6;i++)mesh(p,orb,i%2?violet:gold,(i%3-1)*.5,1.38,counterZ+(i<3?-.15:.2),.18,.18,.18)}
+  if(kind==='TRŽNICE'){for(let i=0;i<6;i++)mesh(p,orb,i%2?violet:gold,(i%3-1)*.5,1.38,counterZ+(i<3?-.15:.2),.18,.18,.18)}
   if(kind==='ZDRAVOTNÍ CENTRUM'){for(const side of [-1,1]){b(p,shell,side*3.8,5.55,-1,1.2,1.1,2.4);b(p,glow,side*3.8,6.12,-1,1.1,.055,2.3)}b(p,glow,0,2.35,counterZ,.65,.16,.07);b(p,glow,0,2.35,counterZ,.16,.65,.07)}
   targets.push({x,z:z+d/2-1.3,name,note:spec.note,category:'district'});
  }
