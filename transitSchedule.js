@@ -10,7 +10,8 @@ export const STOPS={
 };
 export const LINES=[
  {id:'M1',name:'Maglev · Pobřežní okruh',mode:'Maglev',interval:30,start:0,dwell:3,platform:'01',stops:[{id:'valley',offset:0},{id:'haven',offset:7},{id:'nova',offset:17},{id:'valley',offset:25}]},
- {id:'A2',name:'Antigrav · Přístavní spoj',mode:'Antigrav',interval:20,start:5,platform:'02',stops:[{id:'valley',offset:0},{id:'spaceport',offset:8},{id:'valley',offset:16}]},
+ {id:'M2',name:'Maglev · Pobřežní okruh proti směru',mode:'Maglev',interval:30,start:15,dwell:3,platform:'02',stops:[{id:'valley',offset:0},{id:'nova',offset:5},{id:'haven',offset:15},{id:'valley',offset:25}]},
+ {id:'A2',name:'Antigrav · Přístavní spoj',mode:'Antigrav',interval:20,start:5,platform:'03',stops:[{id:'valley',offset:0},{id:'spaceport',offset:8},{id:'valley',offset:16}]},
  {id:'O1',name:'Orbitální shuttle',mode:'Loď',interval:60,start:15,platform:'A',stops:[{id:'spaceport',offset:0},{id:'orion',offset:20},{id:'spaceport',offset:45}]},
  {id:'S4',name:'Lunární expres',mode:'Loď',interval:120,start:30,platform:'B',stops:[{id:'orion',offset:0},{id:'nyx',offset:35},{id:'orion',offset:80}]}
 ];
@@ -27,7 +28,7 @@ export function arrivals(stopId,nowMinutes,horizon=180){const rows=[];if(!Number
 
 // Intermediate stops have configured dwell (M1: three minutes; default: one). Terminus layovers last until
 // the next interval; each line has one continuously simulated vehicle.
-export function serviceStatus(line,stop){return line==='M1'&&['valley','haven'].includes(stop)?'passenger':line==='A2'&&stop==='valley'?'demo':'planned'}
+export function serviceStatus(line,stop){return ['M1','M2'].includes(line)&&['valley','haven'].includes(stop)?'passenger':line==='A2'&&stop==='valley'?'demo':'planned'}
 export function vehicleState(lineId,minute){
  const l=LINES.find(x=>x.id===lineId);if(!l||!Number.isFinite(minute))return null;
  const cycle=Math.floor((minute-l.start)/l.interval),origin=l.start+cycle*l.interval,phase=minute-origin;
