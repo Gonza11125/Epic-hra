@@ -29,7 +29,7 @@ export function buildSurfaceTile(t,resolution=12){
  const n=resolution+1,edges=[Array.from({length:n},(_,i)=>i),Array.from({length:n},(_,i)=>i*n+n-1),Array.from({length:n},(_,i)=>n*n-1-i),Array.from({length:n},(_,i)=>(n-1-i)*n)];
  const span=tileMetric(t,tilePoint(t.face,t.level,t.x,t.y,.5,.5),1).span;
  const depth=Math.max(3,span*1000*.025,span*span*1000/(R*8));
- for(const edge of edges){const base=positions.length/3;for(const i of edge){const normal=radial.slice(i*3,i*3+3);positions.push(...normal.map((x,k)=>positions[i*3+k]-depth*x));normals.push(...normals.slice(i*3,i*3+3));biomes.push(biomes[i])}
+ for(const edge of edges){const base=positions.length/3;for(const i of edge){const normal=radial.slice(i*3,i*3+3);positions.push(...normal.map((x,k)=>positions[i*3+k]-depth*x));normals.push(...normals.slice(i*3,i*3+3));radial.push(...normal);biomes.push(biomes[i])}
  for(let j=0;j<edge.length-1;j++){const a=edge[j],b=edge[j+1],c=base+j,d=c+1;indices.push(a,c,b,b,c,d)}}
  return {originMeters,positions,normals,radial,biomes,indices,skirtDepthMeters:depth};
 }
