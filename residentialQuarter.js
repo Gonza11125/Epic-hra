@@ -24,7 +24,7 @@ export function installResidential(T,root,colliders){
  const b=(m,x,y,z,w,h,d)=>batch(cube,m,x,y,z,w,h,d);
  function mesh(geo,m,x,y,z,w=1,h=1,d=1){const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.scale.set(w,h,d);o.receiveShadow=!m.transparent;group.add(o);return o}
  function col(x,z,w,d){colliders.push([x-w/2,x+w/2,z-d/2,z+d/2])}
- function sign(p){const c=document.createElement('canvas');c.width=384;c.height=128;const a=c.getContext('2d');a.fillStyle='#203743';a.fillRect(0,0,384,128);a.fillStyle='#d4f3ef';a.textAlign='center';a.font='bold 39px sans-serif';a.fillText(p.title,192,54);a.font='23px sans-serif';a.fillText('ELYRA / '+p.id,192,96);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;mesh(new T.PlaneGeometry(2.5,.83),new T.MeshBasicMaterial({map:t}),p.x,3.53,p.z+p.d/2+1.72)}
+ function sign(p){const c=document.createElement('canvas');c.width=384;c.height=128;const a=c.getContext('2d');a.fillStyle='#203743';a.fillRect(0,0,384,128);a.fillStyle='#d4f3ef';a.textAlign='center';a.font='bold 39px sans-serif';a.fillText(p.title,192,54);a.font='23px sans-serif';a.fillText('ELYRA / '+p.id,192,96);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;mesh(new T.PlaneGeometry(2.5,.83),new T.MeshBasicMaterial({map:t}),p.x,3.42,p.z+p.d/2+.18)}
  function home(p){
   const B=(m,x,y,z,w,h,d)=>b(m,p.x+x,y,p.z+z,w,h,d),C=(x,z,w,d)=>col(p.x+x,p.z+z,w,d),S=(m,x,y,z,w,h,d)=>{B(m,x,y,z,w,h,d);C(x,z,w,d)};
   const {w,d}=p;buildings.push(p);
