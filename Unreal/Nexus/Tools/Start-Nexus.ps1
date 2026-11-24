@@ -80,9 +80,29 @@ try {
     foreach ($file in @($editor,$cmdEditor,$build)) { if (!(Test-Path -LiteralPath $file)) { throw "Chybi soubor $file" } }
     $version = Get-Content -LiteralPath (Join-Path $EngineRoot 'Engine\Build\Build.version') -Raw | ConvertFrom-Json
     if ($version.MajorVersion -ne 5 -or $version.MinorVersion -lt 4) { throw 'Projekt cili na Unreal Engine 5.4 nebo novejsi radu 5.x.' }
+    $shortPathHelp = 'Zkopiruj slozku Unreal\Nexus ze ZIPu primo do C:\Hry\Nexus (nebo jine kratke cesty) a spust tam Start-Nexus.cmd.'
+    if ($version.MinorVersion -eq 8 -and $version.PatchVersion -eq 4) {
+        # This generated filename was reported by UBT for our Win64 Development target in 5.8.4.
+        # Other engine configurations can use different filenames; UBT decides whether to proceed.
+        $pch = Join-Path $projectDir 'Intermediate\Build\Win64\x64\NexusEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h.dep.json'
+        if ($pch.Length -ge 260) {
+            Write-Warning "Pri sestaveni NexusEditor muze mit cesta k souboru PCH $($pch.Length) znaku (limit 260). $shortPathHelp"
+        }
+    }
     Write-Host "Unreal $($version.MajorVersion).$($version.MinorVersion).$($version.PatchVersion) - sestavuji NexusEditor"
-    & $build NexusEditor Win64 Development "-Project=$project" -WaitMutex -NoHotReloadFromIDE
-    if ($LASTEXITCODE -ne 0) { throw "UnrealBuildTool skoncil s kodem $LASTEXITCODE. Prvni chyba je ve vypisu vyse nebo v $env:LOCALAPPDATA\UnrealBuildTool\Log.txt." }
+    $projectPrefix = $projectDir + [IO.Path]::DirectorySeparatorChar
+    $reportedLongProjectPath = $false
+    & $build NexusEditor Win64 Development "-Project=$project" -WaitMutex -NoHotReloadFromIDE | ForEach-Object {
+        if ($_ -match '^\s*\[\d+ characters\]\s+(.+)$' -and
+            $Matches[1].StartsWith($projectPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            $reportedLongProjectPath = $true
+        }
+        $_
+    }
+    if ($LASTEXITCODE -ne 0) {
+        if ($reportedLongProjectPath) { throw "UnrealBuildTool ohlasil dlouhou cestu uvnitr projektu. $shortPathHelp" }
+        throw "UnrealBuildTool skoncil s kodem $LASTEXITCODE. Prvni chyba je ve vypisu vyse nebo v $env:LOCALAPPDATA\UnrealBuildTool\Log.txt."
+    }
     $mapFile = Join-Path $projectDir 'Content\Maps\Valley07.umap'
     if (!(Test-Path -LiteralPath $mapFile)) {
         $ready = Join-Path $saved 'NexusValley.ready'

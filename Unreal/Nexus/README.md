@@ -4,12 +4,14 @@ Nativní prototyp pro Windows a Unreal Engine 5. Na plošině stojí obytný mod
 
 ## První spuštění na Windows
 
-1. Rozbal celý ZIP. Otevři složku `Unreal/Nexus` a spusť **Start-Nexus.cmd**.
+1. V archivu otevři `Unreal\Nexus` a celou složku `Nexus` zkopíruj například do `C:\Hry\Nexus`. V cílové složce uvidíš vedle sebe `Nexus.uproject` a **Start-Nexus.cmd**. Spusť **Start-Nexus.cmd**.
 2. Spouštěč použije nejnovější nalezenou instalaci řady UE 5 od 5.4. U vlastní instalace můžeš zadat složku enginu. C++ projekt potřebuje kompilátor MSVC a Windows SDK odpovídající verzi UE. Ve Visual Studio Installer najdeš potřebné součásti v sadě **Game development with C++**.
 3. Při prvním startu spouštěč sestaví modul NexusEditor, vytvoří materiály, modely a mapu a ověří podlahu u startu, hloubku jezírka a průchod dveřmi. Pak otevře mapu **Valley07**. Počkej na dokončení kompilace shaderů a stiskni zelené **Play**. Pro další otevření již připravené mapy můžeš použít stejný spouštěč.
 4. Pokud sestavení skončí chybou, v okně zůstane výpis. Při chybě přípravy scény je podrobný záznam v `Saved/Nexus-LevelBuild.log`. První užitečný údaj je první hláška `error` nebo `LogPython: Error` s konkrétním názvem souboru či funkce.
 
 Verzi lze zvolit příkazem `Start-Nexus.cmd -EngineRoot "D:\Epic Games\UE_5.6"`. Příklad cesty uprav podle své instalace. Vytvořené mapy a materiály najdeš v Content Browseru pod Maps, Flora a FieldMaterials. Při dalším startu se existující mapa otevře s uloženými úpravami. Všechny podklady pro sestavení jsou přiložené. Node.js se používá pouze při změně exportu ze zdrojového generátoru.
+
+Pokud výpis obsahuje `[261 characters]` nebo podobnou délku a uvedená cesta vede do `Nexus\Intermediate\Build`, zkrať cestu ke složce projektu podle kroku 1. Už rozbalený projekt můžeš také zkopírovat na kratší cestu. Pokud jsi ho upravoval, vezmi vlastní kopii včetně svých dat.
 
 Pokud UnrealBuildTool ohlásí v souboru `Nexus.uproject` chybu `0xFF` na prvním bajtu, vezmi z opraveného ZIPu soubor `Tools/Start-Nexus.ps1`, nahraď jím stejný soubor ve svém projektu a spusť `Start-Nexus.cmd`. Spouštěč zkontroluje JSON a při rozpoznané značce kódování převede celý text do UTF-8 bez BOM. Původní bajty uloží do souboru `Nexus.uproject.<id>.bak` vedle projektu. Samotnou kontrolu a případnou opravu spustíš příkazem `Start-Nexus.cmd -CheckProjectOnly`.
 

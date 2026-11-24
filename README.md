@@ -4,7 +4,7 @@ Infinite worlds. One life. Your choice.
 
 ## Unreal Engine 5 pro Windows • Údolí 07
 
-Zdrojový projekt je v [Unreal/Nexus](Unreal/Nexus/README.md). Po rozbalení celého archivu spusť `Unreal/Nexus/Start-Nexus.cmd`. Při prvním otevření vznikne editovatelná mapa s terénem 2,5 × 3,5 km, devíti původními druhy flóry a skal, obytným modulem a pobřežní sondou. Součástí vývojové verze jsou nativní pohyb, dvě kamery, deník průzkumu a save/load. Windows sestavení a hraný průchod v Unrealu čekají na ověření na cílovém PC.
+Zdrojový projekt je v [Unreal/Nexus](Unreal/Nexus/README.md). Z archivu zkopíruj složku `Unreal/Nexus` například do `C:\Hry\Nexus` a spusť v ní `Start-Nexus.cmd`. Při prvním otevření vznikne editovatelná mapa s terénem 2,5 × 3,5 km, devíti původními druhy flóry a skal, obytným modulem a pobřežní sondou. Součástí vývojové verze jsou nativní pohyb, dvě kamery, deník průzkumu a save/load. Windows sestavení a hraný průchod v Unrealu čekají na ověření na cílovém PC.
 
 ## Web 0.1.4.7 • Living Waters
 
