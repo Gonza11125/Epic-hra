@@ -2,6 +2,13 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6.6 — Údolí 07: občanské čtvrti
+- Nový modul `districts5000.js`: tři průchozí veřejné budovy Aster Market, Helix Institute a Vita Centre s prosklenými stěnami, tvarovanými střechami, odlišnými střešními detaily, interiérovým vybavením a informačními panely; Luma Gardens s fontánou, svítícími rostlinami a mobiliářem.
+- Čtyři občanské zóny, šest propojujících pěších úseků se světelnými okraji, osm laviček a deset lamp. Nové zóny a půdorysy budov se zobrazují na herní mapě.
+- Společný územní plán odstraňuje generované stromy, kameny, keře a trávu z nových staveb a tras. Déšť se nevykresluje v nových interiérech. Původní úkoly, vlaky M1/M2, uložená hra a přepínání pohledu zachovány.
+- 120 dílčích strukturálních kontrol s náhradními Three.js třídami: 283 nových objektů, 49 platných kolizních boxů, průchod středem všech tří vchodů, kontrola chráněných bodů expedice a dopravy. Syntaxe upravených skriptů ověřena. Skutečný GPU a iPad test nebyl proveden.
+- Obchody, klinika a výzkum jsou nyní prozkoumatelná místa, nikoli fungující ekonomické nebo zdravotní služby. Rozsah hratelné mapy zůstává přibližně 194 × 194 m; další rozvoj Údolí 07 má přednost před orbitálními stanicemi.
+
 ## 0.1.3.6.4 — LUMEN R24: tvarovaná karoserie
 - Původní hranaté bočnice nahrazeny spojitými spline plochami s plynule se zužujícími čely. Panoramatická okna s oblými rohy, skutečnými otvory a zapuštěným zasklením; barevné pásy a popisy kopírují plášť. Tvarované posuvné dveře, senzorové pásy, světelný podpis, levitační moduly a střešní technika.
 - Nová čalouněná sedadla, opěrky, madla, police, dveřní prahy a displeje. Zachován dvoučlánkový průchozí interiér, 16 sedadel, 24 m délka, nastupování a výstup chůzí, obě linky M1/M2. Nástup/výstup až po úplném otevření dveří.
