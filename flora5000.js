@@ -1,6 +1,6 @@
 // Elyra native ecosystem. Original reusable meshes, deterministic placement.
 // One geometry/material batch per species component; no remote model downloads.
-export function installElyraFlora(T,{root,trunks,crowns,grassBlade,ground,colliders}){
+export function installElyraFlora(T,{root,trunks,crowns,grassBlade,ground,colliders,clearance=()=>false}){
  const flora=new T.Group();flora.name='Elyra | native ecosystem';root.add(flora);
  const std=(c,r=.8)=>new T.MeshStandardMaterial({color:c,roughness:r});
  const bark=std(0x4e5365),bark2=std(0x59405d),bark3=std(0x455d67);
@@ -27,7 +27,7 @@ export function installElyraFlora(T,{root,trunks,crowns,grassBlade,ground,collid
  const species={aurora:0,veil:0,spire:0,coral:0,mushroom:0},examples=[[],[],[]];
  // Preserve the old forest positions and physical trunk colliders.
  for(let i=0;i<trunks.count;i++){
-  trunks.getMatrixAt(i,source);source.decompose(p,quat,sc);const x=p.x,z=p.z,h=sc.y/.85,angle=rand()*Math.PI*2;const typ=i%3;examples[typ].push({x,z});
+  trunks.getMatrixAt(i,source);source.decompose(p,quat,sc);const x=p.x,z=p.z,h=sc.y/.85,angle=rand()*Math.PI*2;if(clearance(x,z,.8))continue;const typ=i%3;examples[typ].push({x,z});
   begin(x,0,z,h*.85,.85+h*.14,angle);
   if(typ===0){ // Aurora tree: branching umbrella, lilac canopy.
    species.aurora++;add(trunkGeo,bark,0,0,0,1,1,1);for(let j=0;j<4;j++){const a=j*Math.PI/2+.35,xx=Math.cos(a),zz=Math.sin(a);branch(0,.51,0,xx*.94,.86,zz*.94,bark,.85);add(ellipsoid,canopy,xx*.79,.92,zz*.79,.92,.19,.78,0,a,.08,baseColor.setHSL(.71+(i%5)*.016,.32,.65));add(podGeo,bio,xx*.79,.77,zz*.79,.075,.05,.075)}add(ellipsoid,canopy,0,1.03,0,1.05,.22,.96,0,0,0,baseColor.setHSL(.76,.22,.78));
@@ -37,7 +37,7 @@ export function installElyraFlora(T,{root,trunks,crowns,grassBlade,ground,collid
    species.spire++;add(trunkGeo,bark2,0,0,0,.82,1.15,.82);for(let j=0;j<3;j++){const a=j*2.399;const xx=Math.sin(a),zz=Math.cos(a),y=.58+j*.17;branch(0,y-.18,0,xx*.65,y,zz*.65,bark2,.65);add(podGeo,petal,xx*.6,y+.11,zz*.6,.5,.22,.55,.2,a,.1,baseColor.setHSL(.81+(i%4)*.014,.30,.72));add(podGeo,violet,xx*.68,y+.16,zz*.68,.10,.08,.10)}add(podGeo,petal,0,1.17,0,.39,.24,.39,0,0,0,baseColor.setHSL(.84,.25,.8))}
  }
  // No new solid obstacles near gameplay, existing routes stay clear.
- function safe(x,z){return Math.abs(x)>7&&Math.abs(z-14)>4&&!(Math.abs(x+11)<3&&Math.abs(z)<55)&&!(Math.abs(x)<27&&Math.abs(z)<28)&&Math.hypot(x-35,z+42)>6&&!colliders.some(b=>x>b[0]-.55&&x<b[1]+.55&&z>b[2]-.55&&z<b[3]+.55)}
+ function safe(x,z){return !clearance(x,z,.6)&&Math.abs(x)>7&&Math.abs(z-14)>4&&!(Math.abs(x+11)<3&&Math.abs(z)<55)&&!(Math.abs(x)<27&&Math.abs(z)<28)&&Math.hypot(x-35,z+42)>6&&!colliders.some(b=>x>b[0]-.55&&x<b[1]+.55&&z>b[2]-.55&&z<b[3]+.55)}
  for(let i=0;i<220;i++){const x=(rand()-.5)*178,z=(rand()-.5)*178;if(!safe(x,z))continue;const size=.45+rand()*.65;begin(x,.01,z,size,size,rand()*6.28);if(i%2){species.mushroom++;for(let j=0;j<3;j++){const a=j*2.399,r=.19+j*.16,xx=Math.cos(a)*r,zz=Math.sin(a)*r,h=.45+j*.25;add(stalkGeo,bark3,xx,h/2,zz,.08,h,.08);add(cupGeo,cap,xx,h,zz,.27+j*.10,.27+j*.07,.27+j*.10,0,a,.06,baseColor.setHSL(.74+j*.035,.23,.78));add(podGeo,violet,xx,h+.09,zz,.055,.045,.055)}}else{species.coral++;for(let j=0;j<5;j++){const a=j*2.399,xx=Math.cos(a),zz=Math.sin(a);branch(0,0,0,xx*.34,.58+(j%2)*.16,zz*.34,bark3,.36);add(leafGeo,leafPurple,0,.16,0,.48,.58,.67,-.64,a,0,baseColor.setHSL(.78+(j%2)*.04,.25,.74));add(podGeo,bio,xx*.34,.6+(j%2)*.16,zz*.34,.07,.07,.07)}}}
  let count=0;const meshList=[];for(const [geo,materials] of batches)for(const [mat,instances] of materials){const mesh=new T.InstancedMesh(geo,mat,instances.length);const tinted=instances.some(k=>k.c);instances.forEach((e,i)=>{mesh.setMatrixAt(i,e.m);if(e.c)mesh.setColorAt(i,e.c);else if(tinted)mesh.setColorAt(i,baseColor.set(0xffffff))});mesh.instanceMatrix.needsUpdate=true;mesh.castShadow=false;mesh.receiveShadow=true;mesh.computeBoundingSphere();flora.add(mesh);meshList.push(mesh);count+=instances.length}
  // Existing forest is replaced visually, collision geometry retained.
