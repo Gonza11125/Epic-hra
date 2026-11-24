@@ -66,6 +66,47 @@ export function surfaceSample(p,base=sample(p)){
  const n=(f,k)=>noise(v[0]*f+13.8,v[1]*f-7.2,v[2]*f+21.1,seed+k);
  const ridge=1-Math.abs(2*n(62,11)-1);
  const relief=fade*mount*((Math.pow(ridge,3)-.25)*.155+(n(190,31)-.5)*.084+(n(820,51)-.5)*.025+(n(4800,71)-.5)*.006+(n(32000,91)-.5)*.0016);
- return {...base,surfaceElevationKm:Math.max(.000001,e+relief),reliefKm:relief};
+ const natural=Math.max(.000001,e+relief),local=valleyCoordinates(v),regional=valleyLandscape(local.x,local.z);const h=mix(natural,(VALLEY_BASE+regional.heightMeters)/1000,regional.weight);
+ return {...base,surfaceElevationKm:h,reliefKm:h-e};
 }
 export const surfaceRadiusMeters=p=>(PLANET.radiusKm+surfaceSample(p).surfaceElevationKm)*1000;
+
+// Valley 07: authored landscape on the actual sphere, not a separate flat level.
+// Local coordinates: x east, z north, in metres on the reference sphere.
+export const VALLEY={id:'valley-07',name:'Údolí 07',widthMeters:2500,lengthMeters:3500,detailWidthMeters:1200,detailLengthMeters:1600,blendWidthMeters:1000,center:{lat:36,lon:18}};
+const VA=direction(36,18),VE=normalize([-VA[2],0,VA[0]]),VN=normalize([-Math.sin(36*rad)*Math.cos(18*rad),Math.cos(36*rad),-Math.sin(36*rad)*Math.sin(18*rad)]),VR=PLANET.radiusKm*1000;
+const vd=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+export function valleyCoordinates(p){const a=vd(p,VA),x=vd(p,VE),z=vd(p,VN),l=Math.hypot(x,z);if(a<=0)return {x:1e9,z:1e9};const k=l<1e-14?VR:Math.atan2(l,a)*VR/l;return {x:x*k,z:z*k}}
+export function valleyDirection(x,z){const l=Math.hypot(x,z),t=l/VR;if(l<1e-10)return VA.slice();return normalize(VA.map((a,i)=>a*Math.cos(t)+(VE[i]*x+VN[i]*z)*Math.sin(t)/l))}
+const VALLEY_BASE=sample(VA).elevationKm*1000;
+export const VALLEY_POINTS=[
+ {id:'settlement',name:'Plošina osady',x:0,z:0},{id:'south',name:'Jižní panorama',x:15,z:-1350},{id:'north',name:'Severní průchod',x:-35,z:1450},{id:'west',name:'Západní vyhlídka',x:-660,z:-420},{id:'east',name:'Východní rokle',x:640,z:520}];
+export const VALLEY_ROUTES=[
+ {id:'main',name:'Hlavní cesta',points:[[15,-1600],[15,-1350],[35,-850],[-20,-350],[0,0],[-20,500],[-35,1050],[-35,1450],[-35,1700]],width:14},
+ {id:'west',name:'Cesta na západní vyhlídku',points:[[-20,-350],[-160,-490],[-330,-620],[-540,-690],[-700,-630],[-750,-520],[-660,-420]],width:12},
+ {id:'east',name:'Cesta do východní rokle',points:[[-20,500],[155,410],[305,365],[460,430],[640,520]],width:10}];
+function pathDistance(x,z,points){let best=Infinity;for(let i=1;i<points.length;i++){const [a,b]=points[i-1],[c,d]=points[i],dx=c-a,dz=d-b,t=clamp(((x-a)*dx+(z-b)*dz)/(dx*dx+dz*dz),0,1);best=Math.min(best,Math.hypot(x-a-t*dx,z-b-t*dz))}return best}
+const gauss=(x,z,cx,cz,sx,sz)=>Math.exp(-(((x-cx)/sx)**2)-((z-cz)/sz)**2);
+export function valleyLandscape(x,z){
+ const weight=(1-smooth(clamp((Math.abs(x)-1250)/1000,0,1)))*(1-smooth(clamp((Math.abs(z)-1750)/1000,0,1)));
+ if(weight===0)return {weight:0,heightMeters:0,trail:0,rock:0,meadow:0,zone:'outside'};
+ const axis=55*Math.sin(z/650),dx=x-axis;
+ const west=gauss(dx,z,-920,120,440,1400)*(340+75*Math.cos(z/330))+gauss(dx,z,-1160,820,290,690)*160;
+ const east=gauss(dx,z,960,380,390,1150)*(250+55*Math.sin(z/210))+gauss(dx,z,1140,-820,320,570)*160;
+ const ravine=gauss(x,z,690,510,130,460)*95;
+ const floor=9*Math.sin(z/530)+5*Math.sin(x/140)*Math.cos(z/340);
+ const rugged=(noise(x/150,z/150,9,712)-.5)*22+(noise(x/43,z/43,12,713)-.5)*8;
+ const hill=west+east-ravine,rough=smooth(clamp(Math.abs(dx)/720,0,1));
+ let height=16+floor+hill+rugged*rough;
+ // Protected 240 x 240 m settlement platform and gradual shoulders.
+ const pad=1-smooth(clamp((Math.max(Math.abs(x),Math.abs(z))-120)/160,0,1));height=mix(height,18,pad);
+ const distances=VALLEY_ROUTES.map(r=>pathDistance(x,z,r.points));
+ const trail=Math.max(...distances.map((d,i)=>1-smooth(clamp((d-VALLEY_ROUTES[i].width*.5)/12,0,1))));
+ // Routes follow the terrain, with smaller-scale roughness attenuated.
+ height-=rugged*rough*trail*(1-pad)*.85;
+ const rock=clamp((hill-55)/255,0,1)*(1-pad)*(1-trail*.65),meadow=clamp(1-rock-pad*.4,0,1);
+ const zone=pad>.5?'settlement':x<-420?'west':x>420?'east':z>800?'north':z<-800?'south':'valley';
+ return {weight,heightMeters:height,trail,rock,meadow,zone};
+}
+export function valleyPointInfo(p){const q=valleyCoordinates(p),v=valleyLandscape(q.x,q.z);return {...q,...v}}
+export function valleyManifest(){return {...VALLEY,baseElevationMeters:VALLEY_BASE,points:VALLEY_POINTS,routes:VALLEY_ROUTES,coordinateSystem:'local east/north metres on Elyra sphere',generator:'elyra-geography.js?v=3'}}
