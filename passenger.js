@@ -1,4 +1,4 @@
-import {buildRegionalTrain,SEATS,cabinWalkable} from './regionalTrain.js?v=01363';
+import {buildRegionalTrain,SEATS,cabinWalkable} from './regionalTrain.js?v=01364';
 // Passenger state and cabin rendering are separate from the timetable.
 export const BOARDING={valley:{region:'frontier',x:-2.65,z:0},haven:{region:'haven',x:1.75,z:-13}};
 export function boardingPoint(line,stop){const p=BOARDING[stop];if(!p)return null;return line==='M2'?{...p,x:stop==='valley'?4.55:-.15}:p}
