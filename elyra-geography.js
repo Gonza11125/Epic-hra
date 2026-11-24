@@ -62,7 +62,7 @@ export function terrainTile(face,level,x,y,resolution=32){
 // remains the authoritative climate, shoreline and civilizational geography.
 export function surfaceSample(p,base=sample(p)){
  const v=normalize(p),e=base.elevationKm;if(e<=0)return {...base,surfaceElevationKm:0,reliefKm:0};
- const seed=PLANET.seed+9137,fade=smooth(clamp(e/.12,0,1)),mount=base.biome==='mountain'||base.biome==='snow'?1.0:base.biome==='desert'?.48:.62;
+ const seed=PLANET.seed+9137,fade=smooth(clamp(e/.12,0,1)),mount=.48+.52*smooth(clamp(e/3.5,0,1));
  const n=(f,k)=>noise(v[0]*f+13.8,v[1]*f-7.2,v[2]*f+21.1,seed+k);
  const ridge=1-Math.abs(2*n(62,11)-1);
  const relief=fade*mount*((Math.pow(ridge,3)-.25)*.155+(n(190,31)-.5)*.084+(n(820,51)-.5)*.025+(n(4800,71)-.5)*.006+(n(32000,91)-.5)*.0016);
