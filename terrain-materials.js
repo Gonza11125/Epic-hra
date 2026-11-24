@@ -15,26 +15,26 @@ export function createTerrainMaterial(T){
  shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvTerrainCoord=terrainCoord;vTerrainRadial=terrainRadial;vTerrainWeights=terrainWeights;vTerrainWater=terrainWater;');
  shader.fragmentShader='uniform sampler2D nexusPacked; uniform float nexusDetail; varying vec3 vTerrainCoord; varying vec3 vTerrainRadial; varying vec4 vTerrainWeights; varying float vTerrainWater;\n'+shader.fragmentShader;
  shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
- vec3 blend=pow(abs(normalize(vTerrainRadial)),vec3(4.0));blend/=max(.001,blend.x+blend.y+blend.z);
+ vec3 nexusBlend=pow(abs(normalize(vTerrainRadial)),vec3(4.0));nexusBlend/=max(.001,nexusBlend.x+nexusBlend.y+nexusBlend.z);
  float nexusFade=(1.0-smoothstep(.035,.45,length(vViewPosition)))*nexusDetail;
- vec3 uvw=vTerrainCoord/8.0;
- vec4 terrainTex=texture2D(nexusPacked,uvw.yz)*blend.x+texture2D(nexusPacked,uvw.xz)*blend.y+texture2D(nexusPacked,uvw.xy)*blend.z;
+ vec3 nexusUVW=vTerrainCoord/8.0;
+ vec4 terrainTex=texture2D(nexusPacked,nexusUVW.yz)*nexusBlend.x+texture2D(nexusPacked,nexusUVW.xz)*nexusBlend.y+texture2D(nexusPacked,nexusUVW.xy)*nexusBlend.z;
  float nexusHeight=dot(terrainTex,vTerrainWeights);
  float nexusWater=clamp(vTerrainWater,0.0,1.0);
  diffuseColor.rgb*=mix(1.0,.65+nexusHeight*.66,nexusFade*(1.0-nexusWater*.8));
  diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(.86,.96,1.1),nexusWater*.55);
  `);
  shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
- roughnessFactor=mix(clamp(.78+nexusHeight*.20,.65,1.0),.24,nexusWater);
+ roughnessFactor=mix(mix(.88,clamp(.78+nexusHeight*.20,.65,1.0),nexusFade),.24,nexusWater);
  `);
  // Sub-centimetre surface bump from the same packed map; units are km.
  shader.fragmentShader=shader.fragmentShader.replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
- vec3 dx=dFdx(-vViewPosition),dy=dFdy(-vViewPosition);
+ {vec3 dx=dFdx(-vViewPosition),dy=dFdy(-vViewPosition);
  vec3 r1=cross(dy,normal),r2=cross(normal,dx);
  float det=dot(dx,r1);
  float heightDetail=nexusHeight*.000012*nexusFade*(1.0-nexusWater);
  vec3 grad=sign(det)*(dFdx(heightDetail)*r1+dFdy(heightDetail)*r2);
- normal=normalize(max(abs(det),1e-15)*normal-grad);
+ normal=normalize(max(abs(det),1e-15)*normal-grad);}
  `);
  };
  material.customProgramCacheKey=()=> 'elyra-terrain-pbr-0143';
