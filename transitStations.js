@@ -22,11 +22,13 @@ export function buildTransitHub(T,scene,colliders,schedule){
  for(const x of [-18,-8]){b(x,3.08,-4,.11,.07,11,cyan);b(x,.14,3.55,.07,.04,2.8,cyan)}
  for(const z of [-8,-4]){b(-8.1,.30,z,1.0,.6,2.3,frame,true);b(-8.1,.68,z,1,.15,2.3,seat);b(-7.68,1.01,z,.20,.63,2.3,seat)}
  b(-18.35,.46,-3,.85,.92,2.2,frame,true);b(-18.35,.96,-3,.9,.10,2.3,shell);plate('INFO','SÍŤ SOLARIS',-18.34,1.65,-2.52,1.15,Math.PI/2);
- // Platforms flank old railway and future shuttle apron.
- for(const [x,number,label] of [[-3.55,'01','MAGLEV'],[5.5,'02','ANTIGRAV']]){
-  b(x,.09,-1,2.7,.16,24,floor);for(const side of [-1,1])b(x+side*1.22,.19,-1,.065,.035,23.5,amber);
-  for(const z of [-11,1,10]){b(x,1.55,z,.15,3.1,.15,frame);b(x,3.15,z,2.8,.14,.18,shell)}
-  b(x,3.28,-1,2.9,.15,24,shell);b(x,3.16,-1,.07,.055,23.5,cyan);plate(number+' / '+label,'NÁSTUPIŠTĚ',x,2.61,10.3,2.1);
+ // Long M1 boarding platform and contrasting A2 apron.
+ const platformBlue=mat(0x2349b1,.45,.35),platformOrange=mat(0xf57922,.43,.25),deck=mat(0x9fbbca,.7,.2);
+ for(const [x,number,label,len,accent] of [[-3.55,'01','MAGLEV',44,platformBlue],[5.5,'02','ANTIGRAV',18,platformOrange]]){
+  b(x,.10,0,2.65,.20,len,deck);b(x,.205,0,2.62,.035,len,accent);b(x,.23,0,2.1,.035,len-.35,deck);
+  for(const side of [-1,1])b(x+side*1.22,.26,0,.065,.035,len-.4,cyan);
+  for(const z of [-len/2+2,0,len/2-2]){b(x,1.83,z,.15,3.66,.15,frame);b(x,3.72,z,2.8,.15,.18,accent)}
+  b(x,3.85,0,2.9,.17,len,shell);b(x,3.68,0,.07,.055,len-.5,cyan);for(const z of [-len/2+2,len/2-2])plate(number+' / '+label,'NÁSTUPIŠTĚ',x,3.0,z,2.25,z<0?Math.PI:0);
  }
  const cv=document.createElement('canvas');cv.width=1024;cv.height=512;const a=cv.getContext('2d');const tex=new T.CanvasTexture(cv);tex.colorSpace=T.SRGBColorSpace;
  b(-13,2.55,-9.64,5.6,2.4,.16,frame);
