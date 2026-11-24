@@ -2,6 +2,13 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.3 — Architektura budoucnosti
+- `housing5000.js`: znovupoužitelná knihovna modulárních obytných budov se zakřivenou střechou, panoramatickým prosklením, terasou, automatickými posuvnými dveřmi a interiéry.
+- Údolí 07: dva obytné moduly AURA (H-01) a NOVA (H-02) a komunitní centrum FORUM (C-01). V interiérech jsou lůžka, kuchyňské moduly, sedačky, stoly, osvětlení a informační panely.
+- Budovy mají kolize stěn a vybavení, volné vstupy, lokální osvětlení a vlastní značky na mapě. Déšť se uvnitř nových budov nevykresluje. U starých uložených pozic zasahujících do nových překážek se hledá nejbližší volný bod.
+- Panely lze prozkoumat tlačítkem POUŽÍT. Vlastnictví, volné stavění a obyvatelé zatím nejsou implementováni.
+- Syntaxe hlavního skriptu a upravených modulů prošla. Skutečný vizuální test a funkčnost na fyzickém iPadu dosud neověřeny.
+
 ## 0.1.3.2 — Živá Elyra
 - `flora5000.js`: původní procedurální 3D modely tří stromů (Aurora, Veil, Spire), exotických hub a korálového podrostu. Nové stromy nahrazují původní les v Údolí 07 při zachování původního rozmístění a kolizí.
 - Bioluminiscenční části rostlin zesilují v noci a jemně pulzují; upravené barvy půdy a trávy.
