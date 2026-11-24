@@ -1,5 +1,5 @@
 // NEXUS 5000 / public transport design system. Original procedural meshes.
-export const DIMENSIONS={M1:{length:40.4,width:3.5,height:3.7,cars:3},A2:{length:10.8,width:3.9,height:3.7}};
+export const DIMENSIONS={M1:{length:38.4,width:3.8,height:3.5,cars:3},A2:{length:10.8,width:4.1,height:3.6}};
 export function createTransitVehicles(T){
  const mat=(color,roughness=.36,metalness=.35)=>new T.MeshStandardMaterial({color,roughness,metalness});
  const glow=(color,emissive=color)=>new T.MeshStandardMaterial({color,emissive,emissiveIntensity:1.4,roughness:.28});
@@ -43,7 +43,7 @@ export function buildGuideway(T,root,x,length=196){
  const n=Math.floor(length/2.4),tile=new T.InstancedMesh(new T.BoxGeometry(3.35,.014,.14),field,n),o=new T.Object3D();for(let i=0;i<n;i++){o.position.set(x,.285,-length/2+1.2+i*2.4);o.updateMatrix();tile.setMatrixAt(i,o.matrix)}g.add(tile);return g;
 }
 export function installTransitVehicles(T,{frontier,haven,schedule}){
- const A=createTransitVehicles(T),entries=[{line:'M1',stop:'valley',root:frontier,x:0,z:0,model:A.train()},{line:'A2',stop:'valley',root:frontier,x:8.85,z:1,model:A.shuttle()},{line:'M1',stop:'haven',root:haven,x:4.4,z:-13,model:A.train()}];
+ const A=createTransitVehicles(T),entries=[{line:'M1',stop:'valley',root:frontier,x:0,z:0,model:A.train()},{line:'A2',stop:'valley',root:frontier,x:8.35,z:1,model:A.shuttle()},{line:'M1',stop:'haven',root:haven,x:4.4,z:-13,model:A.train()}];
  for(const e of entries){e.root.add(e.model.group);e.model.group.visible=false}
  buildGuideway(T,frontier,0);buildGuideway(T,haven,4.4);
  const platform=new T.MeshStandardMaterial({color:0x7994b2,roughness:.65}),stripe=new T.MeshBasicMaterial({color:0x12e2c8});
