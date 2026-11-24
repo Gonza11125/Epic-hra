@@ -2,6 +2,11 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.3a — Surface character correction
+- Explorer starts grounded on land by default after detailed terrain loads, with an animated third-person character from the original game, radial orientation, chase camera and ground-aware camera clearance. First person remains selectable; flight is optional. Selecting a named land location enters walking mode.
+- Standard terrain material is default; the experimental triplanar shader is opt-in. Touch strafe controls added. Walk streaming is refreshed every 2 m; max walk LOD 17. The main game atlas links directly to the explorer.
+- Six engine-independent 20-second running simulations at the named locations each covered 104 m with 50 terrain selections and a jump returning to ground; 3,600 finite-position/height steps. Syntax checked. No actual browser/GPU/iPad verification; camera, controls, visuals and GitHub Pages deployment still need a device test. The old settlement geometry is not yet placed on this planet surface.
+ 
 ## 0.1.4.3 — Realistic Terrain
 - `elyra-geography.js`: nový deterministický výškový detail v pěti měřítkách. Základní kontinenty, pobřeží, biomy, civilizace a souřadnice osad se nemění; detail je plynule zeslaben u pobřeží. `surfaceRadiusMeters` je společný zdroj výšek pro renderer i fyziku.
 - `planet-streaming.js`: geometrické normály vypočtené ze skutečných sklonů terénu, radiální normály zachovány pro projekci textur a okrajové pásy. `planet-physics.js` používá identické detailní vrcholy pro průsečík s povrchem.
