@@ -46,3 +46,14 @@ export function geographyManifest(){return {schema:1,planet:PLANET,coordinateSys
 // Six cube faces tile a sphere without a longitude seam; compatible with future terrain streaming.
 export function cubeDirection(face,u,v){const p=[[1,v,-u],[-1,v,u],[u,1,-v],[u,-1,v],[u,v,1],[-u,v,-1]][face];if(!p)throw Error('Invalid face');return normalize(p)}
 export function tilePoint(face,level,x,y,u,v){const n=2**level;return cubeDirection(face,2*(x+u)/n-1,2*(y+v)/n-1)}
+
+// Engine-neutral terrain mesh for an individual cube-sphere tile. Local offsets
+// are metres relative to the tile centre, avoiding large floating-point mesh coordinates.
+// Same-level neighbours share exact edge samples; mixed-LOD stitching is future work.
+export function terrainTile(face,level,x,y,resolution=32){
+ if(!Number.isInteger(face)||face<0||face>5||!Number.isInteger(level)||level<0||level>20||!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=2**level||y>=2**level||!Number.isInteger(resolution)||resolution<2||resolution>128)throw Error('Invalid tile');
+ const center=tilePoint(face,level,x,y,.5,.5),originMeters=center.map(c=>c*PLANET.radiusKm*1000),positions=[],normals=[],biomes=[],elevationsKm=[],indices=[];
+ for(let j=0;j<=resolution;j++)for(let i=0;i<=resolution;i++){const v=tilePoint(face,level,x,y,i/resolution,j/resolution),p=sample(v),r=(PLANET.radiusKm+p.elevationKm)*1000;positions.push(...v.map((c,k)=>c*r-originMeters[k]));normals.push(...v);biomes.push(p.biome);elevationsKm.push(p.elevationKm)}
+ for(let j=0;j<resolution;j++)for(let i=0;i<resolution;i++){const a=j*(resolution+1)+i,b=a+1,c=a+resolution+1,d=c+1;indices.push(a,b,c,b,d,c)}
+ return {face,level,x,y,resolution,originMeters,positions,radialNormals:normals,biomes,elevationsKm,indices};
+}
