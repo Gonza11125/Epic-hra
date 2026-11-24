@@ -1,5 +1,14 @@
 # NEXUS — One world. Infinite futures.
 
+## 0.1.2 — Světlo na horizontu / Visual Overhaul
+- Samostatný grafický modul `visuals.js`: procedurální obloha se sluncem, oblaky a hvězdami, měnící se nasvícení, plynulá mlha a dvě vrstvy horského panoramatu.
+- Členité jehličnany, keře, kameny, animovaný pohyb trávy; detailnější materiály, reliéf štěrku a střech.
+- Sedlová střecha nádraží, průhledná okna, přístřešek, výbava, železniční detaily a signály.
+- Anomálie se svítícím halem, orbitujícími úlomky, částicemi a zvukem; déšť jako stopy, zvuky kroků.
+- Nové menu a HUD, tři grafické profily (Úsporná / Vyvážená / Vysoká se stíny). Volba grafiky uložena lokálně.
+- Původní mise a záznamy zachovány, stejný klíč uloženého postupu.
+- JavaScript prošel syntaktickou kontrolou. Vizuální výsledek, kompilaci shaderů v GPU a výkon je nutné otestovat v prohlížeči a na fyzickém iPadu.
+
 ## 0.1.1 — Ozvěny údolí
 - Procedurální povrchové textury, tráva, nové orientační body a osvětlení nádraží.
 - Cyklus počasí: jasno, mlha a déšť; ambientní zvuk větru a potvrzení interakcí.
