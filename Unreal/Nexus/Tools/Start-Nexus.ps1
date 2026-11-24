@@ -92,7 +92,12 @@ try {
     Write-Host "Unreal $($version.MajorVersion).$($version.MinorVersion).$($version.PatchVersion) - sestavuji NexusEditor"
     $projectPrefix = $projectDir + [IO.Path]::DirectorySeparatorChar
     $reportedLongProjectPath = $false
+    $diagnosticPattern = '(?:^\s*|:\s*)(?:(?:fatal\s+)?error|(?:z[a\u00e1]va[z\u017e]n[a\u00e1]\s+)?chyba)(?:\s+(?:C|LNK|CS|MSB)\d+)?\s*:'
+    $firstDiagnostic = $null
+    $buildLog = $null
     & $build NexusEditor Win64 Development "-Project=$project" -WaitMutex -NoHotReloadFromIDE | ForEach-Object {
+        if ($_ -match '^\s*Log file:\s*(.+?)\s*$') { $buildLog = $Matches[1].Trim('"') }
+        if (!$firstDiagnostic -and $_ -match $diagnosticPattern) { $firstDiagnostic = [string]$_ }
         if ($_ -match '^\s*\[\d+ characters\]\s+(.+)$' -and
             $Matches[1].StartsWith($projectPrefix, [StringComparison]::OrdinalIgnoreCase)) {
             $reportedLongProjectPath = $true
@@ -100,8 +105,16 @@ try {
         $_
     }
     if ($LASTEXITCODE -ne 0) {
+        $buildExitCode = $LASTEXITCODE
+        # Some diagnostics reach the UBT log only. Use the file named by this build.
+        if (!$firstDiagnostic -and $buildLog -and [IO.File]::Exists($buildLog)) {
+            $match = Select-String -LiteralPath $buildLog -Pattern $diagnosticPattern -Encoding UTF8 -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($match) { $firstDiagnostic = $match.Line }
+        }
+        if ($firstDiagnostic) { Write-Host "Prvni chyba sestaveni:`n$firstDiagnostic" -ForegroundColor Red }
         if ($reportedLongProjectPath) { throw "UnrealBuildTool ohlasil dlouhou cestu uvnitr projektu. $shortPathHelp" }
-        throw "UnrealBuildTool skoncil s kodem $LASTEXITCODE. Prvni chyba je ve vypisu vyse nebo v $env:LOCALAPPDATA\UnrealBuildTool\Log.txt."
+        if (!$buildLog) { $buildLog = "$env:LOCALAPPDATA\UnrealBuildTool\Log.txt" }
+        throw "UnrealBuildTool skoncil s kodem $buildExitCode. Podrobny vypis: $buildLog"
     }
     $mapFile = Join-Path $projectDir 'Content\Maps\Valley07.umap'
     if (!(Test-Path -LiteralPath $mapFile)) {
