@@ -2,6 +2,14 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6 — Cestující
+- M1 je dostupný pro nastupování v Údolí 07 a Haven během stání. Výstup automaticky v druhém dostupném regionu, pokud jej cestující nezruší; ruční výstup je možný ve zpřístupněné stanici.
+- `passenger.js`: samostatná 3D kabina s uličkou, sedadly, panoramatickými okny, animovanou krajinou a palubním displejem. Jízda trvá podle jízdního řádu, vzdálená krajina je zatím vizuální simulace, ne souvislá planeta.
+- Uložení v4 zachovává stav cestujícího a polohu v kabině. Migrace v3 a starších uložených her zůstává dostupná. Atlas nepovoluje teleportování během jízdy.
+- M1 má tři herní minuty pobytu v mezilehlé stanici. Herní hodiny zpomaleny na 0,011 herní hodiny za sekundu. V Haven lze otevřít odjezdy u nástupiště.
+- 10 kontrol cestujícího, 3 kontroly ukládání a 6 kontrol upraveného jízdního řádu prošlo v dílčích testech; syntaxe hlavního skriptu a modulů ověřena. Vykreslování a hraní na iPadu zatím neověřeno.
+- Nova Aster zatím není přístupná pro výstup, vlak přes ni projíždí podle simulace. A2 zatím nepřepravuje hráče. Orbitální stanice a kulatá planeta následují.
+
 ## 0.1.3.5 — Živá doprava
 - `transitSchedule.js`: deterministická simulace polohy každého spoje, příjezdů, minutového pobytu v mezilehlých stanicích, obratu na konečné a dalšího odjezdu. Funguje přes půlnoc a nezávisle na právě navštíveném regionu, pokud běží herní čas.
 - `transitVehicles.js`: nové procedurální modely maglevu M1 a antigravitačního shuttle A2. Viditelné příjezdy, odjezdy a posuvné panely dveří. M1 je vykreslován v Údolí 07 i Haven, A2 v Údolí 07. V Haven přibyla zkušební trať a nástupiště.
