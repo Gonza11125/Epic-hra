@@ -35,5 +35,10 @@ export function createOrganicEnvelope(T,parent,{x=0,z=0,w,d,type='arc',wallTop=2
  const canopyWidth=Math.min(w*.65,doorWidth+2.5),canopyDepth=1.65;
  surf(M.porcelain,28,8,(u,v)=>{const t=u*2-1;return [t*canopyWidth/2,portalY+.24+.24*t*t+.12*Math.sin(v*Math.PI),Z+.02+v*canopyDepth]});
  surf(M.light,28,1,(u,v)=>{const t=u*2-1;return [t*canopyWidth/2,portalY+.24+.24*t*t-v*.035,Z+.02+canopyDepth]});
- return {group:g,meshes};
+ // Merge static envelope parts by material within each building. Preserve normals
+ // by recomputing on the original indexed surface patches (no cross-patch weld).
+ const byMaterial=new Map();for(const o of [...g.children]){let a=byMaterial.get(o.material);if(!a)byMaterial.set(o.material,a=[]);a.push(o)}
+ for(const [material,parts] of byMaterial){const positions=[],indices=[];for(const o of parts){const a=o.geometry.getAttribute('position'),base=positions.length/3;for(let i=0;i<a.count;i++)positions.push(a.getX(i)+o.position.x,a.getY(i)+o.position.y,a.getZ(i)+o.position.z);if(o.geometry.index){for(const i of o.geometry.index.array)indices.push(base+i)}else{for(let i=0;i<a.count;i++)indices.push(base+i)}g.remove(o);o.geometry.dispose()}
+ const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(positions,3));geo.setIndex(indices);geo.computeVertexNormals();geo.computeBoundingSphere();const o=new T.Mesh(geo,material);o.receiveShadow=!material.transparent;o.castShadow=material===M.porcelain;g.add(o)}
+ return {group:g,meshes,draws:g.children.length};
 }
