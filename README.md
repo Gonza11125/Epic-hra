@@ -2,6 +2,11 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.3.6.4 — LUMEN R24: tvarovaná karoserie
+- Původní hranaté bočnice nahrazeny spojitými spline plochami s plynule se zužujícími čely. Panoramatická okna s oblými rohy, skutečnými otvory a zapuštěným zasklením; barevné pásy a popisy kopírují plášť. Tvarované posuvné dveře, senzorové pásy, světelný podpis, levitační moduly a střešní technika.
+- Nová čalouněná sedadla, opěrky, madla, police, dveřní prahy a displeje. Zachován dvoučlánkový průchozí interiér, 16 sedadel, 24 m délka, nastupování a výstup chůzí, obě linky M1/M2. Nástup/výstup až po úplném otevření dveří.
+- Design Lab má nový detail čela. Strukturální kontrola pomocí náhradních tříd Three.js ověřila generování konečných souřadnic a platné indexy vlastních ploch (cca 35 846 vrcholů a 57 380 indexovaných trojúhelníků na model v této kontrole), stav dveří a 73 bodů uličky. Syntaktická kontrola prošla. Nejde o skutečný GPU test; triangulace standardních Three.js geometrií, vizuální vzhled a výkon na iPadu nejsou ověřeny.
+
 ## 0.1.3.6.3 — LUMEN R24
 - `regionalTrain.js`: nový regionální maglev délky 24 m, dva průchozí články, 16 samostatně modelovaných sedadel, prosklené stěny, skutečné dveřní otvory, madla, zavazadlové police, palubní displeje, levitační moduly a rozdílná barevnost M1/M2.
 - Stejná geometrie interiéru a exteriéru je používána ve stanici i během cesty. Nástup a výstup probíhají chůzí přes správný dveřní otvor na straně nástupiště, bez automatického výstupu. Stání, chůze a dobrovolné sezení; E/POUŽÍT nebo palubní tlačítko pro sednutí a vstávání. Poloha a sedadlo se ukládají.
