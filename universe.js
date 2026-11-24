@@ -1,12 +1,14 @@
 // NEXUS universe: stable IDs, deterministic data, no rendering dependency.
+import {PLANET,LOCATIONS} from './elyra-geography.js?v=1';
 import {validateRide} from './passenger.js?v=01365';
 export const VERSION=4;
 export const UNIVERSE={id:'nexus',galaxies:[{id:'aurelia',name:'Aurelia',systems:[{id:'solaris',name:'Solaris',star:'G2V',bodies:[
-{id:'elyra',name:'Elyra',type:'planet',kind:'Obyvatelná planeta',radiusKm:6310,gravity:0.96,dayHours:27,climate:'Mírné pásmo',color:'#74a99d',orbit:1,regions:[{id:'frontier',name:'Údolí 07',kind:'Pohraniční osada',playable:true,seed:61201},{id:'haven',name:'Pobřeží Haven',kind:'Přírodní rezervace',playable:true,seed:74121},{id:'capital',name:'Nova Aster',kind:'Hlavní město',playable:false,seed:8172}]},
+{id:'elyra',name:'Elyra',type:'planet',kind:'Obyvatelná planeta',radiusKm:PLANET.radiusKm,gravity:0.96,dayHours:PLANET.dayHours,climate:'Více vegetačních pásem',color:'#74a99d',orbit:1,regions:[{id:'frontier',name:'Údolí 07',kind:'Pohraniční osada',playable:true,seed:61201},{id:'haven',name:'Pobřeží Haven',kind:'Přírodní rezervace',playable:true,seed:74121},{id:'capital',name:'Nova Aster',kind:'Hlavní město',playable:false,seed:8172}]},
 {id:'nyx',name:'Nyx',type:'moon',parent:'elyra',kind:'Ledový měsíc',radiusKm:1720,gravity:.18,dayHours:54,color:'#aabfdb',orbit:1.17,regions:[]},
 {id:'vesta',name:'Vesta',type:'planet',kind:'Pouštní planeta',radiusKm:4900,gravity:.71,dayHours:31,color:'#c99464',orbit:1.8,regions:[]},
 {id:'orion',name:'Orion',type:'station',kind:'Orbitální stanice',color:'#e4d5ad',orbit:1.3,regions:[]}
 ]}]}]};
+for(const r of UNIVERSE.galaxies[0].systems[0].bodies[0].regions){const p=LOCATIONS.find(l=>l.id===r.id);if(p)Object.assign(r,{latitude:p.lat,longitude:p.lon,biome:p.biome})}
 export const regionIds=['frontier','haven'];
 export const regionInfo=id=>UNIVERSE.galaxies[0].systems[0].bodies[0].regions.find(r=>r.id===id);
 export const spawn=id=>id==='haven'?{x:0,z:25,yaw:0,pitch:0}:{x:4,z:23,yaw:0,pitch:0};
