@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## NEXUS Model Studio 0.1.1 — LUMEN Panorama 78
+- Referenční varianta podle dodaného koncepčního listu: tři články, celková délka 78 m včetně dvou spár 0,36 m (délka jednotlivých těles 25,76 m), nominální šířka 3,6 m, výška 4,2 m, délka čela 6,8 m. Původní 24m předvolba zachována; 2–8 článků a delší čelo lze upravovat. Údaje o rychlosti a kapacitě na obrázku nejsou implementované parametry fyziky.
+- Přestavěný profil karoserie s plynule klesající střechou čela, zaoblenou špičkou, tmavým prosklením čela, bílými boky, zakřiveným světelným pásem, úzkými sloupky oken, světlomety, zapuštěnými střešními moduly, průběžnými měchy, čtyřmi sedadly v řadě ve širokém provedení a osvětlenou uličkou. Nový detail čela a předvolba Panorama 78. Geometrie není automatická rekonstrukce obrázku.
+- 35 655 dílčích kontrol v 10 konfiguracích s náhradními Three.js třídami; referenční model má 156 sedadel, 1 815 mesh uzlů, 74 996 vrcholů a 115 672 trojúhelníků vlastních parametrických ploch (bez standardních primitiv). Nejde o měřený výkon ani fotorealistickou shodu. Safari, skutečné vykreslení, GLB a import Unreal zatím neověřeny; optimalizace dávkování, detailní materiály, fyzika a integrace do hry následují.
+- Přímé otevření předlohy: https://gonza11125.github.io/Epic-hra/model-studio.html?v=011&design=reference
+
 ## NEXUS Model Studio 0.1.0 — Rail Workshop
 - Samostatná stránka `model-studio.html` a parametrický generátor `model-studio-train.js`: 2–6 článků, délka 10–26 m na článek, šířka 2,8–3,8 m, výška 3–4,2 m, proměnné čelo, čtyři barvy, volitelné vybavení. Výchozí dvoučlánková R24 má 24 m, nová konstrukce má 20 sedadel (starší herní R24 má 16).
 - Oddělené pojmenované díly karoserie, skla, interiéry, dveře, klouby a levitační moduly. Pohledy, řez, animované otevření dveří, lokální autosave, import/export parametrů JSON, náhled PNG a GLB zavřeného kompletního modelu. Referenční obrázek je pouze vizuální podklad; nejde o image-to-3D AI. Bez vlastního účtu nebo platební brány, první načtení potřebuje CDN Three.js.
