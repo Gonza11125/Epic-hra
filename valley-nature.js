@@ -1,6 +1,41 @@
 // Original low-poly sculpted flora assets in metres; batched vertex-coloured meshes.
 import {SPECIES,collectFlora} from './valley-flora.js?v=0145';
 import {PLANET,valleyDirection,valleyCoordinates,surfaceRadiusMeters} from './elyra-geography.js?v=3';
+import {BASIN_APPROACH} from './northern-basin.js';
+
+// White-topped survey posts mark the right shoulder of the route in both directions.
+export function installBasinWaymarks(T,scene){
+ const posts=[],up=new T.Vector3(0,1,0),dummy=new T.Object3D();
+ for(let i=1;i<BASIN_APPROACH.length;i++){
+   const [a,b]=BASIN_APPROACH[i-1],[c,d]=BASIN_APPROACH[i],dx=c-a,dz=d-b;
+   const length=Math.hypot(dx,dz),count=Math.ceil(length/62);
+   for(let j=0;j<count+(i===BASIN_APPROACH.length-1?1:0);j++){
+     const x=a+dx*j/count+4*dz/length,z=b+dz*j/count-4*dx/length;
+     const dir=new T.Vector3(...valleyDirection(x,z));
+     posts.push({x,z,dir,height:surfaceRadiusMeters(dir.toArray())});
+   }
+ }
+ const shaft=new T.InstancedMesh(new T.CylinderGeometry(.075,.13,1.45,6),new T.MeshStandardMaterial({color:0xb9713b}),posts.length);
+ const cap=new T.InstancedMesh(new T.CylinderGeometry(.105,.105,.25,6),new T.MeshStandardMaterial({color:0xf1ecdc,emissive:0xbab99f,emissiveIntensity:.26}),posts.length);
+ for(const mesh of [shaft,cap]){mesh.frustumCulled=false;mesh.count=0;scene.add(mesh)}
+ return function update(q,origin,groundRadius){
+   let count=0;
+   for(const post of posts){
+     const dist=Math.hypot(q.x-post.x,q.z-post.z);
+     if(dist>310)continue;
+     const r=dist<48?groundRadius(post.dir.toArray()):post.height;
+     dummy.quaternion.setFromUnitVectors(up,post.dir);dummy.scale.setScalar(.001);
+     for(const [mesh,lift] of [[shaft,.70],[cap,1.49]]){
+       dummy.position.copy(post.dir).multiplyScalar((r+lift)/1000);
+       dummy.position.x-=origin[0];dummy.position.y-=origin[1];dummy.position.z-=origin[2];
+       dummy.updateMatrix();mesh.setMatrixAt(count,dummy.matrix);
+     }
+     count++;
+   }
+   for(const mesh of [shaft,cap]){mesh.count=count;mesh.visible=count>0;if(count)mesh.instanceMatrix.needsUpdate=true}
+ };
+}
+
 export function createFloraGeometry(T,id,lod=0){
  const pos=[],colors=[];const c=new T.Color(),v=(x,y,z)=>new T.Vector3(x,y,z);
  function append(g,color,center=null,rotation=null,scale=null,warp=null){const p=g.attributes.position,idx=g.index;const q=new T.Vector3();c.set(color);for(let i=0;i<(idx?idx.count:p.count);i++){const k=idx?idx.getX(i):i;q.fromBufferAttribute(p,k);if(warp)warp(q);if(scale)q.multiply(scale);if(rotation)q.applyQuaternion(rotation);if(center)q.add(center);pos.push(q.x,q.y,q.z);const f=.91+.09*Math.sin(q.x*4.1+q.y*3.7+q.z*2.1);colors.push(c.r*f,c.g*f,c.b*f)}g.dispose()}
@@ -22,7 +57,7 @@ export function installValleyNature(T,scene){
  const mat=new T.MeshStandardMaterial({vertexColors:true,roughness:.91,side:T.DoubleSide}),pools=new Map(),wind={value:0},windStrength={value:.35},dummy=new T.Object3D(),up=new T.Vector3(0,1,0),axis=new T.Vector3(),spin=new T.Quaternion(),tint=new T.Color();let last=null,quality='',active=null,items=[],count=0,enabled=true;
  const plantMat=mat.clone();plantMat.onBeforeCompile=shader=>{shader.uniforms.nexusWind=wind;shader.uniforms.nexusWindStrength=windStrength;shader.vertexShader='uniform float nexusWind; uniform float nexusWindStrength;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nfloat phase=dot(instanceMatrix[3].xz,vec2(79.0,113.0));float flex=clamp(position.y,0.0,2.0)*clamp(position.y*.15,0.0,1.0);transformed.x+=sin(nexusWind*1.7+phase+position.y*.4)*flex*nexusWindStrength*.18;transformed.z+=cos(nexusWind*1.2+phase)*flex*nexusWindStrength*.10;\n#endif');};plantMat.customProgramCacheKey=()=> 'elyra-wind-0146';
  function pool(id,lod,capacity){const k=id+':'+lod;let p=pools.get(k);if(!p){const mesh=new T.InstancedMesh(createFloraGeometry(T,id,lod),id==='boulder'||id==='slab'?mat:plantMat,capacity);mesh.count=0;mesh.castShadow=lod===0&&id!=='grass'&&id!=='fungi';mesh.receiveShadow=true;mesh.frustumCulled=false;root.add(mesh);p={mesh,capacity};pools.set(k,p)}return p}
- function update(position,origin,groundRadius,high,tiles,walking){const q=valleyCoordinates(position);root.position.set(...anchor.map((x,i)=>x-origin[i]));root.visible=enabled&&Math.abs(q.x)<2400&&Math.abs(q.z)<2900&&(walking||Math.hypot(...origin)*1000-surfaceRadiusMeters(position)<1600);if(!root.visible){count=0;return}
+ function update(position,origin,groundRadius,high,tiles,walking){const q=valleyCoordinates(position);root.position.set(...anchor.map((x,i)=>x-origin[i]));root.visible=enabled&&Math.abs(q.x)<2400&&q.z> -2900&&q.z<5600&&(walking||Math.hypot(...origin)*1000-surfaceRadiusMeters(position)<1600);if(!root.visible){count=0;return}
  const mode=high?'high':'mobile',changed=!last||Math.hypot(q.x-last.x,q.z-last.z)>10||quality!==mode;if(changed){items=collectFlora(q.x,q.z,high?{radii:[1050,230,90],caps:[1600,850,1900]}:{radii:[750,170,65],caps:[950,550,1400]});for(const item of items){item.direction=valleyDirection(item.x,item.z);item.radiusKm=surfaceRadiusMeters(item.direction)/1000}last=q;quality=mode}
  if(!changed&&active===tiles)return;active=tiles;for(const p of pools.values())p.mesh.count=0;
  for(const item of items){const d=Math.hypot(item.x-q.x,item.z-q.z),lod=d> (high?85:55)?1:0,p=pool(item.id,lod,item.id==='grass'?2000:item.band===0?1700:900),mesh=p.mesh;if(mesh.count>=p.capacity)continue;const v=item.direction,r=d<45&&walking?groundRadius(v)/1000:item.radiusKm;axis.set(...v);dummy.position.set(...v.map((x,i)=>x*r-anchor[i]));dummy.quaternion.setFromUnitVectors(up,axis);spin.setFromAxisAngle(up,item.yaw);dummy.quaternion.multiply(spin);dummy.scale.setScalar(item.scale*.001);dummy.updateMatrix();mesh.setMatrixAt(mesh.count,dummy.matrix);tint.setRGB(item.tint,item.tint,item.tint);mesh.setColorAt(mesh.count,tint);mesh.count++}

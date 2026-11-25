@@ -1,3 +1,4 @@
+import {basinRelief,basinTrailDistance} from './northern-basin.js';
 import {valleyWater,sculptBank} from './valley-waters.js';
 // ELYRA: deterministic planet-wide geography, independent of any graphics engine.
 // All positions are unit Cartesian directions, all physical distances in km.
@@ -67,7 +68,8 @@ export function surfaceSample(p,base=sample(p)){
  const n=(f,k)=>noise(v[0]*f+13.8,v[1]*f-7.2,v[2]*f+21.1,seed+k);
  const ridge=1-Math.abs(2*n(62,11)-1);
  const relief=fade*mount*((Math.pow(ridge,3)-.25)*.155+(n(190,31)-.5)*.084+(n(820,51)-.5)*.025+(n(4800,71)-.5)*.006+(n(32000,91)-.5)*.0016);
- const natural=Math.max(.000001,e+relief),local=valleyCoordinates(v),regional=valleyLandscape(local.x,local.z);const h=mix(natural,(VALLEY_BASE+regional.heightMeters)/1000,regional.weight);
+ const natural=Math.max(.000001,e+relief),local=valleyCoordinates(v),regional=valleyLandscape(local.x,local.z);const basin=basinRelief(local.x,local.z);
+ const h=mix(natural,(VALLEY_BASE+regional.heightMeters)/1000,regional.weight)+(basin?.delta??0)/1000;
  return {...base,surfaceElevationKm:h,reliefKm:h-e};
 }
 export const surfaceRadiusMeters=p=>(PLANET.radiusKm+surfaceSample(p).surfaceElevationKm)*1000;
@@ -85,7 +87,8 @@ export const VALLEY_POINTS=[
 export const VALLEY_ROUTES=[
  {id:'main',name:'Hlavní cesta',points:[[15,-1600],[15,-1350],[35,-850],[-20,-350],[0,0],[-20,500],[-35,1050],[-35,1450],[-35,1700]],width:14},
  {id:'west',name:'Cesta na západní vyhlídku',points:[[-20,-350],[-160,-490],[-330,-620],[-540,-690],[-700,-630],[-750,-520],[-660,-420]],width:12},
- {id:'east',name:'Cesta do východní rokle',points:[[-20,500],[155,410],[305,365],[460,430],[640,520]],width:10}];
+ {id:'east',name:'Cesta do východní rokle',points:[[-20,500],[155,410],[305,365],[460,430],[640,520]],width:10},
+ {id:'shore',name:'Pěšina k jezeru',points:[[0,0],[32,-12],[65,-47],[95,-75],[121,-108],[148,-155]],width:4}];
 function pathDistance(x,z,points){let best=Infinity;for(let i=1;i<points.length;i++){const [a,b]=points[i-1],[c,d]=points[i],dx=c-a,dz=d-b,t=clamp(((x-a)*dx+(z-b)*dz)/(dx*dx+dz*dz),0,1);best=Math.min(best,Math.hypot(x-a-t*dx,z-b-t*dz))}return best}
 function routeProfile(x,z,points,heights){let best=Infinity,h=0;for(let i=1;i<points.length;i++){const [a,b]=points[i-1],[c,d]=points[i],dx=c-a,dz=d-b,t=clamp(((x-a)*dx+(z-b)*dz)/(dx*dx+dz*dz),0,1),dist=Math.hypot(x-a-t*dx,z-b-t*dz);if(dist<best){best=dist;h=mix(heights[i-1],heights[i],t)}}return {distance:best,height:h}}
 const gauss=(x,z,cx,cz,sx,sz)=>Math.exp(-(((x-cx)/sx)**2)-((z-cz)/sz)**2);
@@ -98,7 +101,14 @@ export function valleyLandscape(x,z){
  const ravine=gauss(x,z,690,510,130,460)*95;
  const floor=9*Math.sin(z/530)+5*Math.sin(x/140)*Math.cos(z/340);
  const rugged=(noise(x/150,z/150,9,712)-.5)*22+(noise(x/43,z/43,12,713)-.5)*8;
- const hill=west+east-ravine,rough=smooth(clamp(Math.abs(dx)/720,0,1));
+ // Two rock ribs above the western trail and a notched eastern crest define the skyline.
+ const rib=(cx,cz,sx,sz,lean,rise)=>{
+   const dz=(z-cz)/sz,dx=(x-cx-(z-cz)*lean)/sx,r2=dx*dx+dz*dz;
+   return r2<1?rise*(1-r2)**2:0;
+ };
+ const spurs=rib(-927,190,170,455,-.29,118)+rib(-1030,765,135,295,.31,87)
+   +rib(1025,365,185,390,.23,83);
+ const hill=west+east-ravine+spurs,rough=smooth(clamp(Math.abs(dx)/720,0,1));
  let height=16+floor+hill+rugged*rough;
  // Protected 240 x 240 m settlement platform and gradual shoulders.
  const pad=1-smooth(clamp((Math.max(Math.abs(x),Math.abs(z))-120)/160,0,1));height=mix(height,18,pad);
@@ -111,5 +121,9 @@ export function valleyLandscape(x,z){
  const zone=pad>.5?'settlement':x<-420?'west':x>420?'east':z>800?'north':z<-800?'south':'valley';
  return {weight,heightMeters:sculptBank(height,valleyWater(x,z)),trail,rock,meadow,zone};
 }
-export function valleyPointInfo(p){const q=valleyCoordinates(p),v=valleyLandscape(q.x,q.z);return {...q,...v}}
+export function valleyPointInfo(p){
+ const q=valleyCoordinates(p),v=valleyLandscape(q.x,q.z),basin=basinRelief(q.x,q.z);
+ const trail=Math.max(v.trail,1-smooth(clamp((basinTrailDistance(q.x,q.z)-2)/6,0,1)));
+ return {...q,...v,trail,weight:Math.max(v.weight,basin?.weight??0),rock:Math.max(v.rock,basin?.rock??0),basin:basin?.weight??0};
+}
 export function valleyManifest(){return {...VALLEY,baseElevationMeters:VALLEY_BASE,points:VALLEY_POINTS,routes:VALLEY_ROUTES,coordinateSystem:'local east/north metres on Elyra sphere',generator:'elyra-geography.js?v=3'}}

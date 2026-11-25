@@ -6,6 +6,14 @@ Infinite worlds. One life. Your choice.
 
 Zdrojový projekt je v [Unreal/Nexus](Unreal/Nexus/README.md). Z archivu zkopíruj složku `Unreal/Nexus` například do `C:\Hry\Nexus` a spusť v ní `Start-Nexus.cmd`. Při prvním otevření vznikne editovatelná mapa s terénem 2,5 × 3,5 km, devíti původními druhy flóry a skal, obytným modulem a pobřežní sondou. Součástí vývojové verze jsou nativní pohyb, dvě kamery, deník průzkumu a save/load. Windows sestavení a hraný průchod v Unrealu čekají na ověření na cílovém PC.
 
+## Web 0.1.4.8 • Osada v Údolí 07 a Severní kotlina
+
+Na planetárním povrchu můžeš projít mezi domy AURA a NOVA a společenským domem FORUM. Každý má automatické dveře, vybavený interiér a přístup z centrální pěšiny. Na jihovýchod vede pěšina k jezírku. Na západním a východním hřebeni přibyly skalní výběžky.
+
+Ze severního průchodu pokračuje značená stezka přes sedlo do sousední **Severní kotliny**. Na její trase jsou serpentiny, sloupky se světlými vršky a samostatný list místní mapy. Stezka měří 2,19 km od průchodu na dno. Vzorkování po nejvýše 4 m dalo maximální podélný sklon 22,7 %. Sedlo leží 73 m nad cílem. Rychlé starty najdeš v nabídce míst nebo odkazem [před domem NOVA](planet-explorer.html?start=nova-porch), [na sedle](planet-explorer.html?start=basin-pass) či [na dně kotliny](planet-explorer.html?start=basin-floor).
+
+V nativních datech pro Unreal jsou nový reliéf původního Údolí 07 a pěšina k jezírku. Osadu se třemi domy a Severní kotlinu obsahuje v této verzi webový průzkumník.
+
 ## Web 0.1.4.7 • Living Waters
 
 V jižní části údolí přibylo jezírko s přítokem a odtokem. Terén i kolizní podklad používají stejnou úpravu břehů. Přímo u vody lze začít výběrem **Údolí 07 · Jižní břeh jezírka**. Průzkumník má ruční uložení a načtení globální pěší polohy, směru a kamery v samostatném slotu.

@@ -39,9 +39,11 @@ const root=path.resolve(process.argv[2]||path.join(__dirname,'..'));
    await page.keyboard.press('Space');await page.waitForTimeout(1300);
    await page.keyboard.up('w');await page.keyboard.up('Shift');
    assert.notEqual(await page.locator('#position').innerText(),start);
-   console.log('Walk:',await page.locator('#stats').innerText());
+   console.log('Walk:',await page.locator('#stats').textContent());
    const moved=await page.locator('#position').innerText();
-   await page.locator('#view').click();await page.locator('#texture').click();
+   await page.locator('#view').click();
+   if(await page.locator('#toolsToggle').count())await page.locator('#toolsToggle').click();
+   await page.locator('#texture').click();
    await page.selectOption('#quality','high');await page.selectOption('#daylight','day');await page.waitForTimeout(1400);
    assert.match(await page.locator('#view').innerText(),/1\. osoba/);
    if(hasSave){
@@ -64,6 +66,21 @@ const root=path.resolve(process.argv[2]||path.join(__dirname,'..'));
      await page.keyboard.up('Shift');await page.keyboard.up('w');
      console.log('Southern bank into pond:',await page.locator('#stats').innerText());
    }
+   await page.goto(base+'/planet-explorer.html?start=nova-porch');await landed();
+   await page.keyboard.down('w');await page.keyboard.down('Shift');
+   const indoors=()=>page.waitForFunction(()=>document.querySelector('#place').textContent.startsWith('NOVA'),null,{timeout:60000});
+   await indoors();await page.keyboard.up('Shift');await page.keyboard.up('w');
+   await page.locator('#saveExplorer').click();
+   await page.waitForFunction(()=>document.querySelector('#message').textContent.includes('uložena'));
+   await page.reload();await landed();await page.locator('#loadExplorer').click();await indoors();await landed();
+   await page.keyboard.down('s');
+   await page.waitForFunction(()=>document.querySelector('#place').textContent.startsWith('Obytná'));
+   await page.keyboard.up('s');
+   await page.selectOption('#location','valley:basin-pass');
+   await page.waitForFunction(()=>document.querySelector('#place').textContent==='Severní kotlina');await landed();
+   await page.locator('#valleyMap').click();assert.equal(await page.locator('#mapArea').inputValue(),'north');
+   await page.locator('#valleyMap').click();
+   console.log('NOVA entry, interior save/restore, exit and northern pass map passed.');
    assert.equal(errors.length,0,errors.join('\n'));
  } finally{if(browser)await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1});

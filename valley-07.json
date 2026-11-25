@@ -148,6 +148,37 @@
         ]
       ],
       "width": 10
+    },
+    {
+      "id": "shore",
+      "name": "Pěšina k jezeru",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          32,
+          -12
+        ],
+        [
+          65,
+          -47
+        ],
+        [
+          95,
+          -75
+        ],
+        [
+          121,
+          -108
+        ],
+        [
+          148,
+          -155
+        ]
+      ],
+      "width": 4
     }
   ],
   "coordinateSystem": "local east/north metres on Elyra sphere",
