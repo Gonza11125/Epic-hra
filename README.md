@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## NEXUS Model Studio 0.1.0 — Rail Workshop
+- Samostatná stránka `model-studio.html` a parametrický generátor `model-studio-train.js`: 2–6 článků, délka 10–26 m na článek, šířka 2,8–3,8 m, výška 3–4,2 m, proměnné čelo, čtyři barvy, volitelné vybavení. Výchozí dvoučlánková R24 má 24 m, nová konstrukce má 20 sedadel (starší herní R24 má 16).
+- Oddělené pojmenované díly karoserie, skla, interiéry, dveře, klouby a levitační moduly. Pohledy, řez, animované otevření dveří, lokální autosave, import/export parametrů JSON, náhled PNG a GLB zavřeného kompletního modelu. Referenční obrázek je pouze vizuální podklad; nejde o image-to-3D AI. Bez vlastního účtu nebo platební brány, první načtení potřebuje CDN Three.js.
+- 74 672 dílčích strukturálních a numerických kontrol ve 30 konfiguracích pomocí náhradních Three.js tříd, nikoli reálného rendereru. Ověřeny vlastní souřadnice a indexy, šířka a symetrie, počet článků a dveří, změna polohy a viditelnosti. Skutečné vykreslení, Safari, GLB export/import do UE, PNG, dostupnost Pages a výkon nejsou ověřeny. Dveře mají náhledovou animaci, GLB obsahuje samostatné díly bez animačních klipů, kolizí a herní fyziky. Studio nezměnilo existující modely ve hře.
+- Očekávaná stránka po nasazení: https://gonza11125.github.io/Epic-hra/model-studio.html?v=010
+
 ## 0.1.4.6 — Cinematic Atmosphere
 - `planet-atmosphere.js`: planetární směr slunce, 27hodinový den, místní čas podle zeměpisné délky, plynulá změna oblohy, barvy a intenzity světla, procedurální mraky a hvězdy, atmosférický opar mizící ve výšce. Výchozí denní cyklus je zrychlený (0,035 herní hodiny za sekundu simulace). Svítání/den/západ/noc jsou pevné místní časové předvolby, nikoli astronomické výpočty východu pro každou šířku. Tři volby oblačnosti.
 - `valley-nature.js`: instancované rostliny mají shaderové kývání ve větru; kameny ne. Ve vysoké kvalitě je během chůze za dne povolena lokální stínová mapa 1024² s blízkými stínícími modely vegetace a postavy; terén přijímá stíny. Mobilní režim dynamické stíny vypíná. Nejde o plnohodnotnou volumetrickou atmosféru nebo stíny všech hor.
