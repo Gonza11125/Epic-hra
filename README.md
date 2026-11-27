@@ -2,6 +2,12 @@
 
 Infinite worlds. One life. Your choice.
 
+## 0.1.4.7a — Cinematic Light & Explorer UI
+- `planet-atmosphere.js`: předvolby místního času úsvit 7,3 h, den 10,5 h, západ 19,7 h (slunce nad obzorem, teplé světlo a dlouhé stíny); plynulá barva slunce, měsíční modrofialové světlo a ambient z barvy oblohy v noci (čitelné siluety místo černé), automatická expozice podle jasu scény, širší soumrak s fialovým pásem, měsíční disk. Výšková mlha ve dvou exponenciálních vrstvách sdílená terénem, flórou, vodou i postavou (v údolí cca 18 % oparu na 1,5 km, z letu už ne bílá plocha). Oprava ořezu koule oblohy na velké vzdálenosti.
+- `water-material.js`, `valley-water.js`: pěna jen v peřejích, pod vodopádem a slabě u břehu; úzké podélné pruhy; průhledná mělčina; mokrý pás břehu a tři billboardy mlhy pod vodopádem (jen vysoká kvalita).
+- `planet-explorer.html`: kamera přes rameno s ochranou proti průniku terénem, vodorovný pohled v 1. osobě, natočení do panoramatu na vyhlídkách; kompaktní horní lišta, sbalitelné menu (☰ / M), fotorežim bez UI (H), poloprůhledné dotykové ovládání, logaritmický posuvník výšky s jemným krokem do 3 km.
+- Ověřeno v headless Chromiu (SwiftShader): integrační scénáře, 388 367 + 3 623 numerických kontrol, bez chyb konzole a shaderů. Mobilní režim bez dalších průchodů a draw callů (jen delší výpočet mlhy ve fragmentech). Neověřeno: iPad, Safari, skutečný dotyk a FPS na GPU.
+
 ## 0.1.4.7 — Living Waters
 - `valley-hydrology.js`, `valley-water.js`: deterministická vodní síť Údolí 07 navržená podle skutečného spádu terénu. Jezírko v Rokli (střed cca 590, 890; konstantní hladina 50,0 m nad základnou údolí, 17 184 m², hloubka až 7,45 m), pramenný potok 228 m, vodopád 10 m na přirozeném konvexním zlomu s tůní, odtokový Rokelský potok 1 214 m s mírnými meandry a bezodtoký severní mokřad (8 604 m²). Žádná pěší trasa vodu nekříží, plošina osady je od vody 806 m. Export pro Unreal ve `valley-07-water.json`.
 - `elyra-geography.js`: lokální zahloubení koryt, mísy, přelivu a skalního stupně vodopádu – terén se pouze snižuje, nejvýše 10,7 m v tůni. Globální vzorky (3 690 míst), osady, trasy a plošina beze změny. Renderer, fyzika i vegetace používají stejný zdroj výšek. Vegetace se do vody nerozmisťuje.

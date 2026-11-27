@@ -9,8 +9,8 @@ import {createTerrainMaterial,terrainWeights,textureCoordinates,packedTerrainTex
 import {createPlayer} from './player5000.js?v=0143a';
 import {blockedByFlora,SPECIES} from './valley-flora.js?v=01470';
 import {installValleyNature,setValleyTerrainReady} from './valley-nature.js?v=01471';
-import {installValleyWater} from './valley-water.js?v=01471';
-import {installAtmosphere,DAY_PRESETS,localHour} from './planet-atmosphere.js?v=01470';
+import {installValleyWater} from './valley-water.js?v=01471a';
+import {installAtmosphere,DAY_PRESETS,localHour} from './planet-atmosphere.js?v=01471a';
 const $=id=>document.getElementById(id),fmt=(n,d=1)=>n.toLocaleString('cs-CZ',{maximumFractionDigits:d});
 // 0.1.4.7a: texty nového rozhraní na jednom místě (připraveno na překlad) a volby UI v localStorage.
 const UI={menuOpen:'Skrýt menu (M)',menuClosed:'Menu (M)',photoHint:'Fotorežim · H, Esc nebo klepnutí = návrat',walkHint:'Na povrchu · W/S, Q/E úkroky, Shift, mezerník · H skryje rozhraní',view3:'Pohled: 3. osoba',view1:'Pohled: 1. osoba'};

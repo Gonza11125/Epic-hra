@@ -64,7 +64,7 @@ vec3 wWaves(vec2 p,float t,float fw){
  #endif
  return r;}
 // pěna: úzké podélné pruhy, s rychlostí proudu delší (sp = m/s)
-float wFoamTex(vec2 p,vec2 fd,float sp){vec2 q=vec2(dot(p,fd),dot(p,vec2(-fd.y,fd.x)))*vec2(.75/(1.+.8*sp),3.4);
+float wFoamTex(vec2 p,vec2 fd,float sp){vec2 q=vec2(dot(p,fd),dot(p,vec2(-fd.y,fd.x)))*vec2(.5/(1.+.6*sp),1.5);
  float f=wNoised(q*2.3).x*.62;
  #ifdef WATER_HIGH
  f+=wNoised(q*5.9+5.3).x*.38;
@@ -137,14 +137,18 @@ const COMPOSE=/* glsl */`
  vec3 sky=wSky(R,normalize(radial));
  // absorpce: mělká průzračná, hluboká tmavě modrozelená
  float wAbs=1.-exp(-wDepth/1.4);
- vec3 body=wKind>2.5?wMarsh:mix(wShallow,wDeep,wAbs);
- float aBody=wKind>2.5?mix(.55,.9,wAbs):mix(.3,.93,1.-exp(-wDepth/.75));
+ // mělčina: přes vodu prosvítá dno – tmavé mokré kamení/bahno místo trávy terénu pod hladinou
+ vec3 wBed=vec3(.045,.05,.04);
+ vec3 body=wKind>2.5?wMarsh:mix(mix(wBed,wShallow,smoothstep(.05,.9,wDepth)),wDeep,wAbs);
+ float aBody=wKind>2.5?mix(.55,.9,wAbs):mix(wKind>.5?.55:.42,.93,1.-exp(-wDepth/.75));
  // pěna (0.1.4.7a) jen kde má být: nejprudší peřeje (atribut > ~.65), tůň pod vodopádem (wFall0) a slabě ústí/okraj
  // jezírka; jinak průhledná voda s barvou dna a Fresnelovým odrazem.
  float pool=wFall0.w*(1.-smoothstep(wFall0.z*.35,wFall0.z,distance(vWPlane,wFall0.xy)));
- float wf=wKind<.5?vWFoamV*.4:wKind>2.5?vWFoamV*.1:smoothstep(.64,.8,vWFoamV)*.8;
- wf=max(wf,pool);
- float foamA=smoothstep(1.-wf*.7,1.-wf*.7+.16,wFoamN)*smoothstep(.0,.25,wf);
+ float wf=wKind<.5?vWFoamV*.4:wKind>2.5?vWFoamV*.1:smoothstep(.62,.8,vWFoamV)*.5;
+ wf=max(wf,pool*.85);
+ // antialiasing: z dálky (pruh pěny menší než pixel) průměr místo šumu, měkčí hrana
+ float fAA=smoothstep(.08,.5,wFw*2.);wFoamN=mix(wFoamN,.42,fAA);
+ float foamA=smoothstep(1.-wf*.7,1.-wf*.7+.16+fAA*.3,wFoamN)*smoothstep(.0,.25,wf);
  // v peřejích je i voda mezi pěnou zakalená bublinami (ne průhledná na dno)
  if(wKind>.5&&wKind<1.5){aBody=max(aBody,wf*.6);body=mix(body,mix(wShallow,vec3(.55,.66,.64),.35),clamp(wf,0.,1.)*.6);}
  float lap=wKind<.5?exp(-max(wShore,0.)/.35)*smoothstep(.55,.8,.5+.5*sin(wShore*7.-wTime*1.3+wFoamN*5.))*.5:0.;
@@ -154,7 +158,7 @@ const COMPOSE=/* glsl */`
   // mokrý pás břehu (jen geometrie vysoké kvality): ztmavení a lehký lesk, slábne od vody do ~1,5 m a do dálky
   float wb=clamp(-wShore/1.5,0.,1.);
   a=.5*(1.-smoothstep(.15,1.,wb+(wFoamN-.5)*.25))*(1.-smoothstep(60.,160.,wDist));
-  col=wBank*irr+sky*F*.6+spec*.4;
+  col=wBank*irr+sky*F*.12+spec*.25;
  }else if(wFall){
   // provzdušnělá clona: nahoře sklovitá, dole bílá
   float aer=clamp(smoothstep(.15,.75,vWFoamV)*(.45+.75*wFoamN),0.,1.);
@@ -172,8 +176,7 @@ const COMPOSE=/* glsl */`
   col=prem/max(a,.001);
   // měkký okraj: hladina mizí k čáře břehu (skryje zubatý průnik s hrubým LOD terénu)
   a*=smoothstep(.0,wKind<.5?1.1:.55,wShore);
-  // potok: přesah pásu za okraj koryta (záporná vzdálenost) = úzký mokrý okraj
-  if(wKind>.5&&wKind<1.5&&wShore<0.){float wb=clamp(-wShore/.4,0.,1.);a=.35*(1.-wb);col=wBank*irr+sky*F*.5;}
+
  }
  outgoingLight=col;diffuseColor.a=clamp(a,0.,1.);
  #ifdef WATER_DEBUG
@@ -235,7 +238,7 @@ export function createWaterfallVeil(T,{origin,up,flow,count=3,size=4.5,uniforms}
  const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('veilCorner',new T.BufferAttribute(corner,2));g.setAttribute('veilSeed',new T.BufferAttribute(seed,1));g.setIndex(idx);
  g.boundingSphere=new T.Sphere(new T.Vector3(...origin),size*.004);
  const U=uniforms||{mTime:{value:0}},VU={...U,veilSize:{value:size*.001}};
- const m=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.55,depthWrite:false,side:T.DoubleSide});m.name='nexus-waterfall-veil';
+ const m=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.42,depthWrite:false,side:T.DoubleSide});m.name='nexus-waterfall-veil';
  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,VU);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec2 veilCorner;attribute float veilSeed;uniform float mTime,veilSize;varying vec2 vVeilUv;varying float vVeilSeed;')
    .replace('#include <project_vertex>',`vVeilUv=veilCorner;vVeilSeed=veilSeed;
