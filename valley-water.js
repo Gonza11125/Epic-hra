@@ -5,6 +5,7 @@
 import {PLANET,valleyDirection,valleyCoordinates,valleyLandscape,valleyWaterNetwork,valleyManifest,surfaceRadiusMeters} from './elyra-geography.js?v=4';
 import {lakeSignedDistance} from './valley-hydrology.js?v=01470';
 import {valleyLayerVisible} from './valley-nature.js?v=01470';
+import {createWaterUniforms,linkSkyUniforms,createWaterMaterial,createWaterfallMist} from './water-material.js?v=01470';
 
 export const WATER_KIND={lake:0,stream:1,waterfall:2,wetland:3};
 // Popis atributů geometrie (stejné názvy v BufferGeometry i v engine-neutral datech).
@@ -78,10 +79,15 @@ export function routeClearance(net=valleyWaterNetwork()){const routes=valleyMani
 export function platformDistance(net=valleyWaterNetwork(),half=120){let best=Infinity;const box=(x,z)=>Math.hypot(Math.max(0,Math.abs(x)-half),Math.max(0,Math.abs(z)-half));for(const Rr of net.reaches)for(const p of Rr.stations)best=Math.min(best,box(p.x,p.z)-p.w/2);for(const L of net.lakes)for(const [x,z] of L.outline)best=Math.min(best,box(x,z));return best}
 
 // Three.js vrstva. T = modul three. Pozice v km relativně ke kotvě údolí jako valley-nature.js (plovoucí počátek).
-export function installValleyWater(T,scene){
+export function installValleyWater(T,scene,{mist=true}={}){
  const root=new T.Group(),anchorDir=valleyDirection(0,0),anchor=anchorDir.map(x=>x*PLANET.radiusKm);root.name='valley-water';scene.add(root);
- const material=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,transparent:true,opacity:.8,roughness:.22,metalness:0,emissive:0x0b2a30,side:T.DoubleSide,depthWrite:false});
- const meshes={};let enabled=true,current=null,stats={vertices:0,triangles:0};
+ // Materiál: procedurální voda (water-material.js); barvy oblohy sdílené s planet-atmosphere.js, světla ze scény.
+ const U=createWaterUniforms(T),skyLinked=linkSkyUniforms(scene,U),materials={},unit=v=>{const l=Math.hypot(...v);return v.map(x=>x/l)};
+ const east0=unit(valleyDirection(1,0).map((v,k)=>v-anchorDir[k])),north0=unit(valleyDirection(0,1).map((v,k)=>v-anchorDir[k]));U.wEast.value.set(...east0);U.wNorth.value.set(...north0);
+ let sunLight=null,hemiLight=null;const findLights=()=>scene.traverse(o=>{if(o.isDirectionalLight&&!sunLight)sunLight=o;if(o.isHemisphereLight&&!hemiLight)hemiLight=o});findLights();
+ const materialFor=q=>materials[q]||(materials[q]=createWaterMaterial(T,U,q));
+ const meshes={},mists=[];let enabled=true,mistEnabled=!!mist,current=null,stats={vertices:0,triangles:0,particles:0,drawCalls:0};const t0=performance.now();
+ const landAlbedo=new T.Color(0x557a5c),tmp=new T.Color(),tmp2=new T.Color();
  function geometry(quality){const d=buildWaterMeshData({quality}),n=d.vertexCount,pos=new Float32Array(n*3),nor=new Float32Array(n*3),flow=new Float32Array(n*3),col=new Float32Array(n*3),uv=new Float32Array(n*2),b=base();
   const shallow=new T.Color(0x86cbbb),deep=new T.Color(0x2c7383),fall=new T.Color(0xd6ecea),c=new T.Color();
   for(let i=0;i<n;i++){const x=d.x[i],z=d.z[i],dir=valleyDirection(x,z),rk=(R+b+d.h[i])/1000,e1=valleyDirection(x+1,z),n1=valleyDirection(x,z+1),east=e1.map((v,k)=>v-dir[k]),north=n1.map((v,k)=>v-dir[k]),le=Math.hypot(...east),ln=Math.hypot(...north);
@@ -91,10 +97,21 @@ export function installValleyWater(T,scene){
   const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nor,3));g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));
   g.setAttribute('flowDirection',new T.BufferAttribute(flow,3));for(const [name,key] of [['flowSpeed','speed'],['waterDepth','depth'],['shoreDistance','shore'],['waterKind','kind'],['foam','foam']])g.setAttribute(name,new T.BufferAttribute(Float32Array.from(d[key]),1));
   g.setIndex(n>65535?new T.BufferAttribute(Uint32Array.from(d.indices),1):new T.BufferAttribute(Uint16Array.from(d.indices),1));g.computeBoundingSphere();
-  const mesh=new T.Mesh(g,material);mesh.name='valley-water-'+quality;mesh.frustumCulled=true;mesh.renderOrder=2;mesh.userData={parts:d.parts,vertices:n,triangles:d.triangleCount};return mesh}
+  const mesh=new T.Mesh(g,materialFor(quality));mesh.name='valley-water-'+quality;mesh.frustumCulled=true;mesh.renderOrder=2;mesh.receiveShadow=quality==='high';mesh.userData={parts:d.parts,vertices:n,triangles:d.triangleCount};return mesh}
+ // Sprška u paty vodopádů – jen vysoká kvalita (jeden draw call Points na vodopád).
+ function buildMists(){const net=valleyWaterNetwork(),b=base();for(const W of net.waterfalls){const x=W.x+W.dirX*W.throwMeters,z=W.z+W.dirZ*W.throwMeters,dir=valleyDirection(x,z),rk=(R+b+W.bottom)/1000,e=unit(valleyDirection(x+1,z).map((v,k)=>v-dir[k])),nn=unit(valleyDirection(x,z+1).map((v,k)=>v-dir[k]));
+  const m=createWaterfallMist(T,{origin:dir.map((v,k)=>v*rk-anchor[k]),up:dir,flow:unit(e.map((v,k)=>v*W.dirX+nn[k]*W.dirZ)),count:90});root.add(m.points);mists.push(m)}}
+ function refreshStats(quality){const m=meshes[quality],showMist=quality==='high'&&mistEnabled;stats={vertices:m.userData.vertices,triangles:m.userData.triangles,particles:showMist?mists.reduce((s,x)=>s+x.count,0):0,drawCalls:1+(showMist?mists.length:0)}}
  // position: jednotkový směr pozorovatele; origin: plovoucí počátek (km). Viditelnost = stejné pravidlo jako vegetace.
  function update(position,origin,high,walking){root.visible=enabled&&valleyLayerVisible(position,origin,walking);if(!root.visible)return;
-  const quality=high?'high':'mobile';if(!meshes[quality]){meshes[quality]=geometry(quality);root.add(meshes[quality])}if(current!==quality){for(const [k,m] of Object.entries(meshes))m.visible=k===quality;current=quality;stats={vertices:meshes[quality].userData.vertices,triangles:meshes[quality].userData.triangles}}
+  const quality=high?'high':'mobile';if(!meshes[quality]){meshes[quality]=geometry(quality);root.add(meshes[quality])}if(high&&mistEnabled&&!mists.length)buildMists();
+  if(current!==quality){for(const [k,m] of Object.entries(meshes))m.visible=k===quality;current=quality}
+  for(const m of mists)m.points.visible=high&&mistEnabled;refreshStats(quality);
+  const t=((performance.now()-t0)/1000)%3600;U.wTime.value=t;for(const m of mists)m.uniforms.mTime.value=t;
+  // Barva svahů v odrazu a osvětlení spršky podle aktuálních světel (den/noc z planet-atmosphere.js).
+  if(!sunLight||!hemiLight)findLights();
+  if(sunLight&&hemiLight){tmp.copy(hemiLight.color).multiplyScalar(hemiLight.intensity*.35).add(tmp2.copy(sunLight.color).multiplyScalar(sunLight.intensity*.3));U.wLand.value.copy(landAlbedo).multiply(tmp);
+   tmp.copy(hemiLight.color).multiplyScalar(hemiLight.intensity*.6).add(tmp2.copy(sunLight.color).multiplyScalar(sunLight.intensity*.3));for(const m of mists)m.material.color.copy(tmp)}}
   root.position.set(...anchor.map((x,i)=>x-origin[i]))}
- return {update,setEnabled(v){enabled=!!v;root.visible=enabled&&root.visible},get enabled(){return enabled},get stats(){return root.visible?stats:{vertices:0,triangles:0}},material,root,attributes:WATER_ATTRIBUTES,network:()=>valleyWaterNetwork()};
+ return {update,setEnabled(v){enabled=!!v;root.visible=enabled&&root.visible},setMistEnabled(v){mistEnabled=!!v},get enabled(){return enabled},get stats(){return root.visible?stats:{vertices:0,triangles:0,particles:0,drawCalls:0}},get material(){return materials[current||'high']||materialFor('high')},materials,uniforms:U,skyLinked,root,attributes:WATER_ATTRIBUTES,network:()=>valleyWaterNetwork()};
 }
