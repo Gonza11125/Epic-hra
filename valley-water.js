@@ -87,7 +87,7 @@ export function installValleyWater(T,scene,{mist=true}={}){
  let sunLight=null,hemiLight=null;const findLights=()=>scene.traverse(o=>{if(o.isDirectionalLight&&!sunLight)sunLight=o;if(o.isHemisphereLight&&!hemiLight)hemiLight=o});findLights();
  const materialFor=q=>materials[q]||(materials[q]=createWaterMaterial(T,U,q));
  const meshes={},mists=[];let enabled=true,mistEnabled=!!mist,current=null,stats={vertices:0,triangles:0,particles:0,drawCalls:0};const t0=performance.now();
- const landAlbedo=new T.Color(0x557a5c),tmp=new T.Color(),tmp2=new T.Color();
+ const landAlbedo=new T.Color(0x67875a),tmp=new T.Color(),tmp2=new T.Color();
  function geometry(quality){const d=buildWaterMeshData({quality}),n=d.vertexCount,pos=new Float32Array(n*3),nor=new Float32Array(n*3),flow=new Float32Array(n*3),col=new Float32Array(n*3),uv=new Float32Array(n*2),b=base();
   const shallow=new T.Color(0x86cbbb),deep=new T.Color(0x2c7383),fall=new T.Color(0xd6ecea),c=new T.Color();
   for(let i=0;i<n;i++){const x=d.x[i],z=d.z[i],dir=valleyDirection(x,z),rk=(R+b+d.h[i])/1000,e1=valleyDirection(x+1,z),n1=valleyDirection(x,z+1),east=e1.map((v,k)=>v-dir[k]),north=n1.map((v,k)=>v-dir[k]),le=Math.hypot(...east),ln=Math.hypot(...north);
@@ -111,7 +111,7 @@ export function installValleyWater(T,scene,{mist=true}={}){
   // Barva svahů v odrazu a osvětlení spršky podle aktuálních světel (den/noc z planet-atmosphere.js).
   if(!sunLight||!hemiLight)findLights();
   if(sunLight&&hemiLight){tmp.copy(hemiLight.color).multiplyScalar(hemiLight.intensity*.35).add(tmp2.copy(sunLight.color).multiplyScalar(sunLight.intensity*.3));U.wLand.value.copy(landAlbedo).multiply(tmp);
-   tmp.copy(hemiLight.color).multiplyScalar(hemiLight.intensity*.6).add(tmp2.copy(sunLight.color).multiplyScalar(sunLight.intensity*.3));for(const m of mists)m.material.color.copy(tmp)}}
+   tmp.copy(hemiLight.color).multiplyScalar(hemiLight.intensity*.6).add(tmp2.copy(sunLight.color).multiplyScalar(sunLight.intensity*.3));for(const m of mists)m.material.color.copy(tmp)}
   root.position.set(...anchor.map((x,i)=>x-origin[i]))}
  return {update,setEnabled(v){enabled=!!v;root.visible=enabled&&root.visible},setMistEnabled(v){mistEnabled=!!v},get enabled(){return enabled},get stats(){return root.visible?stats:{vertices:0,triangles:0,particles:0,drawCalls:0}},get material(){return materials[current||'high']||materialFor('high')},materials,uniforms:U,skyLinked,root,attributes:WATER_ATTRIBUTES,network:()=>valleyWaterNetwork()};
 }

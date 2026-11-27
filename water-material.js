@@ -60,6 +60,15 @@ vec3 wWaves(vec2 p,float t,float fw){
  q=R2*p;n=wNoised(q*2.9+vec2(-t*.19,t*.23));g=(n.yz*2.9)*R2;r+=vec3(n.x,g)*.12*(1.-smoothstep(.35,.9,fw*2.9));
  #endif
  return r;}
+// pěna: šum protažený po proudu (podélně dlouhé pruhy), kontrastní
+float wFoamTex(vec2 p,vec2 fd){vec2 q=vec2(dot(p,fd),dot(p,vec2(-fd.y,fd.x)))*vec2(.9,2.6);
+ float f=wNoised(q*2.3).x*.62;
+ #ifdef WATER_HIGH
+ f+=wNoised(q*5.9+5.3).x*.38;
+ #else
+ f+=.19;
+ #endif
+ return f;}
 // odraz oblohy: stejné barvy jako procedurální obloha (planet-atmosphere.js), dole svahy údolí
 vec3 wSky(vec3 d,vec3 up){
  float h=dot(d,up),s=max(0.,dot(d,sunDir));vec3 night=vec3(.004,.009,.024);
@@ -71,8 +80,8 @@ vec3 wSky(vec3 d,vec3 up){
  #endif
  a=mix(a,night,space);
  // nízké odražené paprsky narazí na svahy kolem vody (náhrada za planární odraz)
- vec3 land=mix(wLand,mix(night,horizon,day),.28); // svahy s leteckou perspektivou
- return mix(land,a,smoothstep(.02,.3,h));}
+ vec3 land=mix(wLand,mix(night,horizon,day),.12)*mix(.6,1.,smoothstep(0.,.12,h)); // svahy, u hladiny tmavší pás břehu
+ return mix(land,a,smoothstep(.03,.3,h));}
 `;
 
 const LIGHT_SPLIT=/* glsl */`
@@ -83,6 +92,8 @@ vec3 wV=normalize((vec4(normalize(vViewPosition),0.)*viewMatrix).xyz); // směr 
 float wDist=length(vViewPosition)*1000.;
 float wFw=max(length(fwidth(vWPlane)),1e-4);
 bool wFall=wKind>1.5&&wKind<2.5;
+// potoky klesají až ~35° (kaskády): skutečný sklon hladiny z derivací (atribut normal je radiála)
+if(wKind>.5&&wKind<1.5){vec3 gn=normalize((vec4(cross(dFdx(vViewPosition),dFdy(vViewPosition)),0.)*viewMatrix).xyz);if(dot(gn,wUp)<0.)gn=-gn;wUp=gn;}
 vec3 wN=wUp;vec2 wAdv=vec2(dot(vWFlow,wEast),dot(vWFlow,wNorth))*wSpeed;float wFoamN=.5;
 if(wFall){
  vec3 wT=normalize(vWFlow);vec3 wB=normalize(cross(wUp,wT));
@@ -94,10 +105,10 @@ if(wFall){
  vec3 wg;
  if(wSpeed>.02){ // dvoufázová advekce podle proudu (bez trhání vzoru)
   float ph=wTime*.45,f0=fract(ph),f1=fract(ph+.5),k=abs(1.-2.*f0);
-  vec3 a=wWaves(vWPlane-wAdv*f0*2.2,wTime,wFw),b=wWaves(vWPlane-wAdv*f1*2.2+vec2(.37,.71),wTime,wFw);
-  wg=mix(a,b,k);
- }else wg=wWaves(vWPlane,wTime,wFw);
- wFoamN=wg.x;
+  vec2 pa=vWPlane-wAdv*f0*2.2,pb=vWPlane-wAdv*f1*2.2+vec2(.37,.71),fd=normalize(wAdv);
+  wg=mix(wWaves(pa,wTime,wFw),wWaves(pb,wTime,wFw),k);
+  wFoamN=mix(wFoamTex(pa,fd),wFoamTex(pb+vec2(3.1,1.7),fd),k);
+ }else{wg=wWaves(vWPlane,wTime,wFw);wFoamN=wFoamTex(vWPlane+vec2(wTime*.03,0.),vec2(1.,0.));}
  wStr*=1./(1.+wDist/90.);
  wN=normalize(wUp-(wg.y*wEast+wg.z*wNorth)*wStr);
 }
@@ -123,7 +134,7 @@ const COMPOSE=/* glsl */`
  // pěna: atribut foam (peřeje, tůň, ústí, okraj) rozbitý šumem + jemný příboj u břehu jezírka
  float fk=wKind<.5?.45:wKind>2.5?.12:1.;
  float wf=vWFoamV*fk;
- float foamA=smoothstep(1.-wf,1.-wf+.28,wFoamN*.75+wf*.45);
+ float foamA=smoothstep(1.-wf*.8,1.-wf*.8+.16,wFoamN)*smoothstep(.0,.25,wf);
  float lap=wKind<.5?exp(-max(wShore,0.)/.35)*smoothstep(.55,.8,.5+.5*sin(wShore*7.-wTime*1.3+wFoamN*5.))*.5:0.;
  foamA=clamp(foamA+lap,0.,1.)*(1.-smoothstep(25.,120.,wDist)*.6);
  vec3 col;float a;
