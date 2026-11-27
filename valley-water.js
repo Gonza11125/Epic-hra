@@ -5,9 +5,9 @@
 import {PLANET,valleyDirection,valleyCoordinates,valleyLandscape,valleyWaterNetwork,valleyManifest,surfaceRadiusMeters} from './elyra-geography.js?v=4';
 import {lakeSignedDistance} from './valley-hydrology.js?v=01470';
 import {valleyLayerVisible} from './valley-nature.js?v=01471';
-import {createWaterUniforms,linkSkyUniforms,createWaterMaterial,createWaterfallMist} from './water-material.js?v=01471';
+import {createWaterUniforms,linkSkyUniforms,createWaterMaterial,createWaterfallMist,createWaterfallVeil} from './water-material.js?v=01471a';
 
-export const WATER_KIND={lake:0,stream:1,waterfall:2,wetland:3};
+export const WATER_KIND={lake:0,stream:1,waterfall:2,wetland:3,wetBank:4};// wetBank jen v Three.js vrstvě (ne v exportu)
 // Popis atributů geometrie (stejné názvy v BufferGeometry i v engine-neutral datech).
 export const WATER_ATTRIBUTES={
  position:'vec3, km, scéna relativně k lokálnímu počátku údolí (root.position = kotva - plovoucí počátek kamery)',
@@ -79,16 +79,27 @@ export function routeClearance(net=valleyWaterNetwork()){const routes=valleyMani
 export function platformDistance(net=valleyWaterNetwork(),half=120){let best=Infinity;const box=(x,z)=>Math.hypot(Math.max(0,Math.abs(x)-half),Math.max(0,Math.abs(z)-half));for(const Rr of net.reaches)for(const p of Rr.stations)best=Math.min(best,box(p.x,p.z)-p.w/2);for(const L of net.lakes)for(const [x,z] of L.outline)best=Math.min(best,box(x,z));return best}
 
 // Three.js vrstva. T = modul three. Pozice v km relativně ke kotvě údolí jako valley-nature.js (plovoucí počátek).
-export function installValleyWater(T,scene,{mist=true}={}){
+// Volby: mist = sprška + mlžný závoj u vodopádu (jen vysoká kvalita); wetBank = mokrý pás kolem jezírek
+// ({high,mobile}; výchozí jen vysoká – mobilní síť zůstává beze změny).
+export function installValleyWater(T,scene,{mist=true,wetBank={high:true,mobile:false}}={}){
  const root=new T.Group(),anchorDir=valleyDirection(0,0),anchor=anchorDir.map(x=>x*PLANET.radiusKm);root.name='valley-water';scene.add(root);
  // Materiál: procedurální voda (water-material.js); barvy oblohy sdílené s planet-atmosphere.js, světla ze scény.
  const U=createWaterUniforms(T),skyLinked=linkSkyUniforms(scene,U),materials={},unit=v=>{const l=Math.hypot(...v);return v.map(x=>x/l)};
  const east0=unit(valleyDirection(1,0).map((v,k)=>v-anchorDir[k])),north0=unit(valleyDirection(0,1).map((v,k)=>v-anchorDir[k]));U.wEast.value.set(...east0);U.wNorth.value.set(...north0);
  let sunLight=null,hemiLight=null;const findLights=()=>scene.traverse(o=>{if(o.isDirectionalLight&&!sunLight)sunLight=o;if(o.isHemisphereLight&&!hemiLight)hemiLight=o});findLights();
  const materialFor=q=>materials[q]||(materials[q]=createWaterMaterial(T,U,q));
- const meshes={},mists=[];let enabled=true,mistEnabled=!!mist,current=null,stats={vertices:0,triangles:0,particles:0,drawCalls:0};const t0=performance.now();
+ const meshes={},mists=[],veils=[];let enabled=true,mistEnabled=!!mist,current=null,stats={vertices:0,triangles:0,particles:0,drawCalls:0};const t0=performance.now();
  const landAlbedo=new T.Color(0x67875a),tmp=new T.Color(),tmp2=new T.Color();
- function geometry(quality){const d=buildWaterMeshData({quality}),n=d.vertexCount,pos=new Float32Array(n*3),nor=new Float32Array(n*3),flow=new Float32Array(n*3),col=new Float32Array(n*3),uv=new Float32Array(n*2),b=base();
+ // Mokrý pás břehu (0.1.4.7a): úzký pás 1,6 m vně obrysu jezírka/mokřadu, kreslený PŘED vodou ve stejném draw callu
+ // (indexy na začátku), waterKind 4, shoreDistance záporná. Výška = analytický terén + 5 cm. Hydrologie beze změny.
+ function addWetBank(d,quality){const net=valleyWaterNetwork(),step=quality==='high'?1:3,band=[],W=1.6;
+  for(const L of net.lakes){const o=L.outline,m=o.length,first=d.x.length;let count=0;
+   for(let i=0;i<m;i+=step){const [x,z]=o[i],e=.4,gx=lakeSignedDistance(L,x+e,z)-lakeSignedDistance(L,x-e,z),gz=lakeSignedDistance(L,x,z+e)-lakeSignedDistance(L,x,z-e),gl=Math.hypot(gx,gz)||1,nx=gx/gl,nz=gz/gl;
+    for(const [k,sd] of [[0,0],[1,-W]]){const px=x+nx*sd,pz=z+nz*sd;d.x.push(px);d.z.push(pz);d.h.push(groundHeight(px,pz)+.05);d.u.push(px-L.x0);d.v.push(pz-L.z0);d.dirX.push(0);d.dirZ.push(0);d.dirY.push(0);d.speed.push(0);d.depth.push(0);d.shore.push(sd);d.kind.push(WATER_KIND.wetBank);d.foam.push(0)}
+    count++}
+   for(let i=0;i<count;i++){const a=first+i*2,b=first+((i+1)%count)*2;band.push(a,a+1,b,b,a+1,b+1)}}
+  for(const p of d.parts)p.start+=band.length;d.indices=band.concat(d.indices);d.parts.unshift({kind:'wet-bank',start:0,count:band.length});d.vertexCount=d.x.length;d.triangleCount=d.indices.length/3}
+ function geometry(quality){const d=buildWaterMeshData({quality});if(wetBank[quality])addWetBank(d,quality);const n=d.vertexCount,pos=new Float32Array(n*3),nor=new Float32Array(n*3),flow=new Float32Array(n*3),col=new Float32Array(n*3),uv=new Float32Array(n*2),b=base();
   const shallow=new T.Color(0x86cbbb),deep=new T.Color(0x2c7383),fall=new T.Color(0xd6ecea),c=new T.Color();
   for(let i=0;i<n;i++){const x=d.x[i],z=d.z[i],dir=valleyDirection(x,z),rk=(R+b+d.h[i])/1000,e1=valleyDirection(x+1,z),n1=valleyDirection(x,z+1),east=e1.map((v,k)=>v-dir[k]),north=n1.map((v,k)=>v-dir[k]),le=Math.hypot(...east),ln=Math.hypot(...north);
    for(let k=0;k<3;k++){pos[i*3+k]=dir[k]*rk-anchor[k];const fx=east[k]/le*d.dirX[i]+north[k]/ln*d.dirZ[i]+dir[k]*d.dirY[i];flow[i*3+k]=fx;nor[i*3+k]=d.kind[i]===WATER_KIND.waterfall?east[k]/le*d.dirX[i]+north[k]/ln*d.dirZ[i]:dir[k]}
@@ -100,18 +111,23 @@ export function installValleyWater(T,scene,{mist=true}={}){
   const mesh=new T.Mesh(g,materialFor(quality));mesh.name='valley-water-'+quality;mesh.frustumCulled=true;mesh.renderOrder=2;mesh.receiveShadow=quality==='high';mesh.userData={parts:d.parts,vertices:n,triangles:d.triangleCount};return mesh}
  // Sprška u paty vodopádů – jen vysoká kvalita (jeden draw call Points na vodopád).
  function buildMists(){const net=valleyWaterNetwork(),b=base();for(const W of net.waterfalls){const x=W.x+W.dirX*W.throwMeters,z=W.z+W.dirZ*W.throwMeters,dir=valleyDirection(x,z),rk=(R+b+W.bottom)/1000,e=unit(valleyDirection(x+1,z).map((v,k)=>v-dir[k])),nn=unit(valleyDirection(x,z+1).map((v,k)=>v-dir[k]));
-  const m=createWaterfallMist(T,{origin:dir.map((v,k)=>v*rk-anchor[k]),up:dir,flow:unit(e.map((v,k)=>v*W.dirX+nn[k]*W.dirZ)),count:90});root.add(m.points);mists.push(m)}}
- function refreshStats(quality){const m=meshes[quality],showMist=quality==='high'&&mistEnabled;stats={vertices:m.userData.vertices,triangles:m.userData.triangles,particles:showMist?mists.reduce((s,x)=>s+x.count,0):0,drawCalls:1+(showMist?mists.length:0)}}
+  const origin=dir.map((v,k)=>v*rk-anchor[k]),flow=unit(e.map((v,k)=>v*W.dirX+nn[k]*W.dirZ)),m=createWaterfallMist(T,{origin,up:dir,flow,count:90});root.add(m.points);mists.push(m);
+  // závoj: 3 billboardy, sdílí čas se spřškou; velikost podle výšky pádu
+  const v=createWaterfallVeil(T,{origin,up:dir,flow,count:3,size:Math.max(3,Math.min(7,W.height*.45)),uniforms:m.uniforms});root.add(v.mesh);veils.push(v)}}
+ // Tůň pod (prvním) vodopádem pro shader pěny: rovinné souřadnice v metrech stejně jako vWPlane (pozice vůči kotvě · east/north).
+ {const W=valleyWaterNetwork().waterfalls[0];if(W){const x=W.x+W.dirX*W.throwMeters,z=W.z+W.dirZ*W.throwMeters,dir=valleyDirection(x,z),rk=(R+base()+W.bottom)/1000,p=dir.map((v,k)=>v*rk-anchor[k]);
+  U.wFall0.value.set(p.reduce((s,v,k)=>s+v*east0[k],0)*1000,p.reduce((s,v,k)=>s+v*north0[k],0)*1000,Math.max(4,W.width*2.6),1)}}
+ function refreshStats(quality){const m=meshes[quality],showMist=quality==='high'&&mistEnabled;stats={vertices:m.userData.vertices,triangles:m.userData.triangles,particles:showMist?mists.reduce((s,x)=>s+x.count,0):0,drawCalls:1+(showMist?mists.length+veils.length:0)}}
  // position: jednotkový směr pozorovatele; origin: plovoucí počátek (km). Viditelnost = stejné pravidlo jako vegetace.
  function update(position,origin,high,walking){root.visible=enabled&&valleyLayerVisible(position,origin,walking);if(!root.visible)return;
   const quality=high?'high':'mobile';if(!meshes[quality]){meshes[quality]=geometry(quality);root.add(meshes[quality])}if(high&&mistEnabled&&!mists.length)buildMists();
   if(current!==quality){for(const [k,m] of Object.entries(meshes))m.visible=k===quality;current=quality}
-  for(const m of mists)m.points.visible=high&&mistEnabled;refreshStats(quality);
+  for(const m of mists)m.points.visible=high&&mistEnabled;for(const v of veils)v.mesh.visible=high&&mistEnabled;refreshStats(quality);
   const t=((performance.now()-t0)/1000)%3600;U.wTime.value=t;for(const m of mists)m.uniforms.mTime.value=t;
   // Barva svahů v odrazu a osvětlení spršky podle aktuálních světel (den/noc z planet-atmosphere.js).
   if(!sunLight||!hemiLight)findLights();
   if(sunLight&&hemiLight){tmp.copy(hemiLight.color).multiplyScalar(hemiLight.intensity*.35).add(tmp2.copy(sunLight.color).multiplyScalar(sunLight.intensity*.3));U.wLand.value.copy(landAlbedo).multiply(tmp);
-   tmp.copy(hemiLight.color).multiplyScalar(hemiLight.intensity*.6).add(tmp2.copy(sunLight.color).multiplyScalar(sunLight.intensity*.3));for(const m of mists)m.material.color.copy(tmp)}
+   tmp.copy(hemiLight.color).multiplyScalar(hemiLight.intensity*.6).add(tmp2.copy(sunLight.color).multiplyScalar(sunLight.intensity*.3));for(const m of mists)m.material.color.copy(tmp);for(const v of veils)v.material.color.copy(tmp)}
   root.position.set(...anchor.map((x,i)=>x-origin[i]))}
  return {update,setEnabled(v){enabled=!!v;root.visible=enabled&&root.visible},setMistEnabled(v){mistEnabled=!!v},get enabled(){return enabled},get stats(){return root.visible?stats:{vertices:0,triangles:0,particles:0,drawCalls:0}},get material(){return materials[current||'high']||materialFor('high')},materials,uniforms:U,skyLinked,root,attributes:WATER_ATTRIBUTES,network:()=>valleyWaterNetwork()};
 }
