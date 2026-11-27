@@ -4,8 +4,8 @@
 // tedy ze stejného zdroje jako renderer (planet-streaming) i fyzika (planet-physics).
 import {PLANET,valleyDirection,valleyCoordinates,valleyLandscape,valleyWaterNetwork,valleyManifest,surfaceRadiusMeters} from './elyra-geography.js?v=4';
 import {lakeSignedDistance} from './valley-hydrology.js?v=01470';
-import {valleyLayerVisible} from './valley-nature.js?v=01470';
-import {createWaterUniforms,linkSkyUniforms,createWaterMaterial,createWaterfallMist} from './water-material.js?v=01470';
+import {valleyLayerVisible} from './valley-nature.js?v=01471';
+import {createWaterUniforms,linkSkyUniforms,createWaterMaterial,createWaterfallMist} from './water-material.js?v=01471';
 
 export const WATER_KIND={lake:0,stream:1,waterfall:2,wetland:3};
 // Popis atributů geometrie (stejné názvy v BufferGeometry i v engine-neutral datech).

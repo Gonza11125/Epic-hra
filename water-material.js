@@ -168,7 +168,7 @@ const COMPOSE=/* glsl */`
 
 export function createWaterMaterial(T,U,quality='high'){
  const high=quality==='high';
- const m=new T.MeshStandardMaterial({color:0xffffff,roughness:.04,metalness:0,transparent:true,side:T.DoubleSide,depthWrite:false});
+ const m=new T.MeshStandardMaterial({color:0xffffff,roughness:.04,metalness:0,transparent:true,side:T.DoubleSide,depthWrite:false});m.forceSinglePass=true;
  m.name='nexus-water-'+quality;m.defines={};if(high)m.defines.WATER_HIGH='';
  m.onBeforeCompile=s=>{
   Object.assign(s.uniforms,U);
@@ -197,7 +197,7 @@ export function createWaterfallMist(T,{origin,up,flow,count=90,seed=7}){
     // metry: vystoupá 1–6 m, rozšíří se a unáší po proudu; převod na km
     vec3 off=mUp*(life*(1.5+4.5*mistSeed.x))+mFlow*(rad.x*(.6+life*1.6)+life*2.5)+mSide*(rad.y*(.6+life*1.8));
     transformed+=off*.001;vMistA=sin(life*3.1416)*(1.-.5*mistSeed.w);`)
-   .replace('gl_PointSize = size;','gl_PointSize = size*(0.6+1.4*life);');
+   .replace('gl_PointSize = size;','gl_PointSize = min(size*(0.6+1.4*life),48.0);');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vMistA;')
    .replace('#include <map_particle_fragment>','#include <map_particle_fragment>\nvec2 pc=gl_PointCoord-.5;diffuseColor.a*=vMistA*smoothstep(.5,.0,length(pc));');
  };
