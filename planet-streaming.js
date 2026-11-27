@@ -1,5 +1,5 @@
 // Engine-independent adaptive cube sphere selector and bounded incremental cache.
-import {PLANET,tilePoint,normalize,terrainTile,surfaceRadiusMeters,valleyCoordinates,valleyPointInfo} from './elyra-geography.js?v=3';
+import {PLANET,tilePoint,normalize,terrainTile,surfaceRadiusMeters,valleyCoordinates,valleyPointInfo} from './elyra-geography.js?v=4';
 export const key=t=>[t.face,t.level,t.x,t.y].join('/');
 const R=PLANET.radiusKm;
 export function tileMetric(t,observer,heightKm){

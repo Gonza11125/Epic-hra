@@ -1,5 +1,5 @@
 // Planet-relative cinematic atmosphere. All scene distances in kilometres.
-import {PLANET} from './elyra-geography.js?v=3';
+import {PLANET} from './elyra-geography.js?v=4';
 export const DAY_PRESETS={dawn:6.0,day:13.5,sunset:21.0,night:0};
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 export function localHour(position,hour){const lon=Math.atan2(position[2],position[0]);return ((hour-lon/(2*Math.PI)*PLANET.dayHours)%PLANET.dayHours+PLANET.dayHours)%PLANET.dayHours}

@@ -1,6 +1,6 @@
 // Original low-poly sculpted flora assets in metres; batched vertex-coloured meshes.
-import {SPECIES,collectFlora} from './valley-flora.js?v=0145';
-import {PLANET,valleyDirection,valleyCoordinates,surfaceRadiusMeters} from './elyra-geography.js?v=3';
+import {SPECIES,collectFlora} from './valley-flora.js?v=01470';
+import {PLANET,valleyDirection,valleyCoordinates,surfaceRadiusMeters} from './elyra-geography.js?v=4';
 export function createFloraGeometry(T,id,lod=0){
  const pos=[],colors=[];const c=new T.Color(),v=(x,y,z)=>new T.Vector3(x,y,z);
  function append(g,color,center=null,rotation=null,scale=null,warp=null){const p=g.attributes.position,idx=g.index;const q=new T.Vector3();c.set(color);for(let i=0;i<(idx?idx.count:p.count);i++){const k=idx?idx.getX(i):i;q.fromBufferAttribute(p,k);if(warp)warp(q);if(scale)q.multiply(scale);if(rotation)q.applyQuaternion(rotation);if(center)q.add(center);pos.push(q.x,q.y,q.z);const f=.91+.09*Math.sin(q.x*4.1+q.y*3.7+q.z*2.1);colors.push(c.r*f,c.g*f,c.b*f)}g.dispose()}

@@ -1,4 +1,5 @@
 // ELYRA: deterministic planet-wide geography, independent of any graphics engine.
+import {deriveWaterNetwork,carveHeight,waterSurfaceAt,waterClear} from './valley-hydrology.js?v=01470';
 // All positions are unit Cartesian directions, all physical distances in km.
 export const PLANET={id:'elyra',name:'Elyra',radiusKm:1737.4,seed:61201,dayHours:27,seaLevelKm:0,maxElevationKm:7.2,minElevationKm:-5.2,revision:1};
 export const BIOMES=[
@@ -60,13 +61,15 @@ export function terrainTile(face,level,x,y,resolution=32){
 
 // Stable, continuous relief in world-space directions. The original sample()
 // remains the authoritative climate, shoreline and civilizational geography.
-export function surfaceSample(p,base=sample(p)){
+export function surfaceSample(p,base=sample(p),carve=true){
  const v=normalize(p),e=base.elevationKm;if(e<=0)return {...base,surfaceElevationKm:0,reliefKm:0};
  const seed=PLANET.seed+9137,fade=smooth(clamp(e/.12,0,1)),mount=.48+.52*smooth(clamp(e/3.5,0,1));
  const n=(f,k)=>noise(v[0]*f+13.8,v[1]*f-7.2,v[2]*f+21.1,seed+k);
  const ridge=1-Math.abs(2*n(62,11)-1);
  const relief=fade*mount*((Math.pow(ridge,3)-.25)*.155+(n(190,31)-.5)*.084+(n(820,51)-.5)*.025+(n(4800,71)-.5)*.006+(n(32000,91)-.5)*.0016);
- const natural=Math.max(.000001,e+relief),local=valleyCoordinates(v),regional=valleyLandscape(local.x,local.z);const h=mix(natural,(VALLEY_BASE+regional.heightMeters)/1000,regional.weight);
+ const natural=Math.max(.000001,e+relief),local=valleyCoordinates(v),regional=carve?valleyLandscape(local.x,local.z):valleyLandscapeBase(local.x,local.z);let h=mix(natural,(VALLEY_BASE+regional.heightMeters)/1000,regional.weight);
+ // Living Waters: koryta se zahlubují i v přechodovém pásmu (min je uvnitř údolí idempotentní).
+ if(carve&&regional.weight>0&&regional.weight<1){const c=valleyWaterCarve(local.x,local.z);if(c<Infinity)h=Math.min(h,(VALLEY_BASE+c)/1000)}
  return {...base,surfaceElevationKm:h,reliefKm:h-e};
 }
 export const surfaceRadiusMeters=p=>(PLANET.radiusKm+surfaceSample(p).surfaceElevationKm)*1000;
@@ -88,7 +91,7 @@ export const VALLEY_ROUTES=[
 function pathDistance(x,z,points){let best=Infinity;for(let i=1;i<points.length;i++){const [a,b]=points[i-1],[c,d]=points[i],dx=c-a,dz=d-b,t=clamp(((x-a)*dx+(z-b)*dz)/(dx*dx+dz*dz),0,1);best=Math.min(best,Math.hypot(x-a-t*dx,z-b-t*dz))}return best}
 function routeProfile(x,z,points,heights){let best=Infinity,h=0;for(let i=1;i<points.length;i++){const [a,b]=points[i-1],[c,d]=points[i],dx=c-a,dz=d-b,t=clamp(((x-a)*dx+(z-b)*dz)/(dx*dx+dz*dz),0,1),dist=Math.hypot(x-a-t*dx,z-b-t*dz);if(dist<best){best=dist;h=mix(heights[i-1],heights[i],t)}}return {distance:best,height:h}}
 const gauss=(x,z,cx,cz,sx,sz)=>Math.exp(-(((x-cx)/sx)**2)-((z-cz)/sz)**2);
-export function valleyLandscape(x,z){
+function valleyLandscapeBase(x,z){
  const weight=(1-smooth(clamp((Math.abs(x)-1250)/1000,0,1)))*(1-smooth(clamp((Math.abs(z)-1750)/1000,0,1)));
  if(weight===0)return {weight:0,heightMeters:0,trail:0,rock:0,meadow:0,zone:'outside'};
  const axis=55*Math.sin(z/650),dx=x-axis;
@@ -110,5 +113,17 @@ export function valleyLandscape(x,z){
  const zone=pad>.5?'settlement':x<-420?'west':x>420?'east':z>800?'north':z<-800?'south':'valley';
  return {weight,heightMeters:height,trail,rock,meadow,zone};
 }
+// Údolí s vodní sítí (0.1.4.7): neupravený reliéf + lokální zahloubení koryt, tůně a hrany vodopádu.
+// Jediný zdroj výšek pro renderer (planet-streaming), fyziku (planet-physics) i vegetaci (valley-flora).
+// water = o kolik metrů je terén v bodě snížen (0 mimo koryta).
+export function valleyLandscape(x,z){const v=valleyLandscapeBase(x,z);v.water=0;if(v.weight===0)return v;const c=valleyWaterCarve(x,z);if(c<v.heightMeters){v.water=v.heightMeters-c;v.heightMeters=c}return v}
+// Neupravený povrch (m nad základnou údolí) včetně přechodového pásma; vstup pro návrh vodní sítě.
+export function valleyUncarvedHeight(x,z){const v=valleyLandscapeBase(x,z);if(v.weight===1)return v.heightMeters;return surfaceSample(valleyDirection(x,z),undefined,false).surfaceElevationKm*1000-VALLEY_BASE}
+let waterNet=null;
+export function valleyWaterNetwork(){if(!waterNet)waterNet=deriveWaterNetwork({height:valleyUncarvedHeight,routes:VALLEY_ROUTES,platform:{half:120}});return waterNet}
+export function valleyWaterCarve(x,z){const n=valleyWaterNetwork();return carveHeight(n,x,z)}
+// Voda v bodě: {kind,id,surface,depth,speed,dirX,dirZ,shore} (m, m/s) nebo null. depth = hladina - upravený terén.
+export function valleyWaterAt(x,z){const n=valleyWaterNetwork(),w=waterSurfaceAt(n,x,z);if(!w)return null;const v=valleyLandscapeBase(x,z);let g=v.weight===1?Math.min(v.heightMeters,carveHeight(n,x,z)):surfaceSample(valleyDirection(x,z)).surfaceElevationKm*1000-VALLEY_BASE;return {...w,ground:g,depth:Math.max(0,w.surface-g)}}
+export function valleyWaterClear(x,z,r=0){return waterClear(valleyWaterNetwork(),x,z,r)}
 export function valleyPointInfo(p){const q=valleyCoordinates(p),v=valleyLandscape(q.x,q.z);return {...q,...v}}
-export function valleyManifest(){return {...VALLEY,baseElevationMeters:VALLEY_BASE,points:VALLEY_POINTS,routes:VALLEY_ROUTES,coordinateSystem:'local east/north metres on Elyra sphere',generator:'elyra-geography.js?v=3'}}
+export function valleyManifest(){return {...VALLEY,baseElevationMeters:VALLEY_BASE,points:VALLEY_POINTS,routes:VALLEY_ROUTES,coordinateSystem:'local east/north metres on Elyra sphere',generator:'elyra-geography.js?v=4',water:{file:'valley-07-water.json',revision:1,module:'valley-hydrology.js'}}}

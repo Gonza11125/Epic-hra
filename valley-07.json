@@ -151,5 +151,10 @@
     }
   ],
   "coordinateSystem": "local east/north metres on Elyra sphere",
-  "generator": "elyra-geography.js?v=3"
+  "generator": "elyra-geography.js?v=4",
+  "water": {
+    "file": "valley-07-water.json",
+    "revision": 1,
+    "module": "valley-hydrology.js"
+  }
 }
