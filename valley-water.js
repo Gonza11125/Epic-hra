@@ -4,6 +4,7 @@
 // tedy ze stejného zdroje jako renderer (planet-streaming) i fyzika (planet-physics).
 import {PLANET,valleyDirection,valleyCoordinates,valleyLandscape,valleyWaterNetwork,valleyManifest,surfaceRadiusMeters} from './elyra-geography.js?v=4';
 import {lakeSignedDistance} from './valley-hydrology.js?v=01470';
+import {valleyLayerVisible} from './valley-nature.js?v=01470';
 
 export const WATER_KIND={lake:0,stream:1,waterfall:2,wetland:3};
 // Popis atributů geometrie (stejné názvy v BufferGeometry i v engine-neutral datech).
@@ -91,8 +92,8 @@ export function installValleyWater(T,scene){
   g.setAttribute('flowDirection',new T.BufferAttribute(flow,3));for(const [name,key] of [['flowSpeed','speed'],['waterDepth','depth'],['shoreDistance','shore'],['waterKind','kind'],['foam','foam']])g.setAttribute(name,new T.BufferAttribute(Float32Array.from(d[key]),1));
   g.setIndex(n>65535?new T.BufferAttribute(Uint32Array.from(d.indices),1):new T.BufferAttribute(Uint16Array.from(d.indices),1));g.computeBoundingSphere();
   const mesh=new T.Mesh(g,material);mesh.name='valley-water-'+quality;mesh.frustumCulled=true;mesh.renderOrder=2;mesh.userData={parts:d.parts,vertices:n,triangles:d.triangleCount};return mesh}
- // position: jednotkový směr pozorovatele; origin: plovoucí počátek (km); altitudeKm: výška kamery nad povrchem.
- function update(position,origin,high,walking,altitudeKm=0){const q=valleyCoordinates(position),near=Math.abs(q.x)<9000&&Math.abs(q.z)<9000&&(walking||altitudeKm<60);root.visible=enabled&&near;if(!root.visible)return;
+ // position: jednotkový směr pozorovatele; origin: plovoucí počátek (km). Viditelnost = stejné pravidlo jako vegetace.
+ function update(position,origin,high,walking){root.visible=enabled&&valleyLayerVisible(position,origin,walking);if(!root.visible)return;
   const quality=high?'high':'mobile';if(!meshes[quality]){meshes[quality]=geometry(quality);root.add(meshes[quality])}if(current!==quality){for(const [k,m] of Object.entries(meshes))m.visible=k===quality;current=quality;stats={vertices:meshes[quality].userData.vertices,triangles:meshes[quality].userData.triangles}}
   root.position.set(...anchor.map((x,i)=>x-origin[i]))}
  return {update,setEnabled(v){enabled=!!v;root.visible=enabled&&root.visible},get enabled(){return enabled},get stats(){return root.visible?stats:{vertices:0,triangles:0}},material,root,attributes:WATER_ATTRIBUTES,network:()=>valleyWaterNetwork()};
