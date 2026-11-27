@@ -1,5 +1,5 @@
 // Deterministic flora and rock placement for Valley 07, metres in its east/north frame.
-import {valleyLandscape,VALLEY_POINTS,VALLEY_ROUTES} from './elyra-geography.js?v=3';
+import {valleyLandscape,valleyWaterClear,VALLEY_POINTS,VALLEY_ROUTES} from './elyra-geography.js?v=4';
 export const SPECIES=[
  {id:'aurora',name:'Aurora – deštníkovník',height:13,radius:5.3,solid:.55,band:0},
  {id:'spire',name:'Spire – jehlicový věžník',height:17,radius:2.4,solid:.48,band:0},
@@ -20,7 +20,8 @@ export function candidate(band,i,j){const step=steps[band],n=seed=>hash(i,j,seed
  else if(band===1){prob=.30+grove*.3;id=v.rock>.55?'slab':r<.45?'shrub':r<.78?'fern':r<.91?'fungi':'slab'}
  else{prob=.72*(1-v.rock);id='grass'}
  if(n(3)>prob||(slope>1.15&&id!=='boulder'&&id!=='slab'))return null;
- const scale=.68+n(5)*.72,s=byId[id];if(!clearance(x,z,s.radius*scale))return null;
+ // 0.1.4.7: nic ve vodě, na březích (rezerva 2 m) ani v upravených korytech (v.water > 0).
+ const scale=.68+n(5)*.72,s=byId[id];if(!clearance(x,z,s.radius*scale)||v.water>0||!valleyWaterClear(x,z,s.radius*scale))return null;
  return {id,x,z,scale,yaw:n(6)*Math.PI*2,tint:.82+n(7)*.29,solid:s.solid*scale,band,key:band+':'+i+':'+j};
 }
 export function collectFlora(x,z,{radii=[750,170,65],caps=[950,550,1400]}={}){const out=[];for(let b=0;b<3;b++){const step=steps[b],r=radii[b],items=[];for(let i=Math.floor((x-r)/step);i<=Math.floor((x+r)/step);i++)for(let j=Math.floor((z-r)/step);j<=Math.floor((z+r)/step);j++){const p=candidate(b,i,j);if(!p)continue;const d=Math.hypot(p.x-x,p.z-z);if(d<=r)items.push({...p,d})}items.sort((a,b)=>a.d-b.d||a.key.localeCompare(b.key));out.push(...items.slice(0,caps[b]))}return out}

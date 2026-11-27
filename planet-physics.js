@@ -1,6 +1,6 @@
 // Radial locomotion on Elyra. SI units for motion; unit vectors for global position.
 // Gameplay gravity is the existing fictional 0.96g, not inferred from radius.
-import {PLANET,normalize,sample,greatCircleStep,tilePoint,surfaceRadiusMeters} from './elyra-geography.js?v=3';
+import {PLANET,normalize,sample,greatCircleStep,tilePoint,surfaceRadiusMeters} from './elyra-geography.js?v=4';
 export const WALK={gravity:9.414384,eyeMeters:1.68,walkMps:1.8,runMps:5.2,jumpMps:4.4};
 const R=PLANET.radiusKm*1000,dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 export function tangentAt(p,t){p=normalize(p);const d=dot(p,t),v=t.map((x,i)=>x-d*p[i]);if(Math.hypot(...v)<1e-10)return normalize(cross(Math.abs(p[1])<.9?[0,1,0]:[1,0,0],p));return normalize(v)}
