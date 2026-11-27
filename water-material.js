@@ -81,7 +81,7 @@ vec3 wSky(vec3 d,vec3 up){
  a=mix(a,night,space);
  // nízké odražené paprsky narazí na svahy kolem vody (náhrada za planární odraz)
  vec3 land=mix(wLand,mix(night,horizon,day),.12)*mix(.6,1.,smoothstep(0.,.12,h)); // svahy, u hladiny tmavší pás břehu
- return mix(land,a,smoothstep(.03,.3,h));}
+ return mix(land,a,smoothstep(.02,.24,h));}
 `;
 
 const LIGHT_SPLIT=/* glsl */`
@@ -98,7 +98,8 @@ vec3 wN=wUp;vec2 wAdv=vec2(dot(vWFlow,wEast),dot(vWFlow,wNorth))*wSpeed;float wF
 if(wFall){
  vec3 wT=normalize(vWFlow);vec3 wB=normalize(cross(wUp,wT));
  // vláknitá clona: šum protažený po proudu, posun dolů rychlostí pádu
- float sv=vWUv.y-wTime*wSpeed;vec3 n=wNoised(vec2(vWUv.x*3.6,sv*.16)),n2=wNoised(vec2(vWUv.x*9.3+1.7,sv*.42));
+ // konstantní posun: wSpeed se po cloně mění a t*wSpeed by se interpolací roztrhal
+ float sv=vWUv.y-wTime*7.;vec3 n=wNoised(vec2(vWUv.x*3.6,sv*.16)),n2=wNoised(vec2(vWUv.x*9.3+1.7,sv*.42));
  wN=normalize(wUp+wB*(n.y*.25+n2.y*.12)+wT*(n.z*.05));wFoamN=clamp(n.x*.65+n2.x*.45,0.,1.);
 }else{
  float wStr=wKind<.5?.16:wKind>2.5?.05:.22+min(wSpeed,2.5)*.22;
@@ -134,7 +135,9 @@ const COMPOSE=/* glsl */`
  // pěna: atribut foam (peřeje, tůň, ústí, okraj) rozbitý šumem + jemný příboj u břehu jezírka
  float fk=wKind<.5?.45:wKind>2.5?.12:1.;
  float wf=vWFoamV*fk;
- float foamA=smoothstep(1.-wf*.8,1.-wf*.8+.16,wFoamN)*smoothstep(.0,.25,wf);
+ float foamA=smoothstep(1.-wf*.72,1.-wf*.72+.2,wFoamN)*smoothstep(.0,.25,wf);
+ // v peřejích je i voda mezi pěnou zakalená bublinami (ne průhledná na dno)
+ if(wKind>.5&&wKind<1.5){aBody=max(aBody,wf*.8);body=mix(body,mix(wShallow,wDeep,.6),clamp(wf*1.2,0.,1.));}
  float lap=wKind<.5?exp(-max(wShore,0.)/.35)*smoothstep(.55,.8,.5+.5*sin(wShore*7.-wTime*1.3+wFoamN*5.))*.5:0.;
  foamA=clamp(foamA+lap,0.,1.)*(1.-smoothstep(25.,120.,wDist)*.6);
  vec3 col;float a;
@@ -149,7 +152,7 @@ const COMPOSE=/* glsl */`
  }else{
   vec3 prem=body*irr*aBody*(1.-F)+sky*F+spec;
   a=aBody*(1.-F)+F;
-  prem=mix(prem,wFoamColor*irr*.92,foamA);a=mix(a,.95,foamA);
+  prem=mix(prem,wFoamColor*irr*(.62+.32*wFoamN),foamA);a=mix(a,.95,foamA);
   a=max(a,min(1.,dot(spec,vec3(.3,.59,.11))*.25));
   col=prem/max(a,.001);
   // měkký okraj: hladina mizí k čáře břehu (skryje zubatý průnik s hrubým LOD terénu)
@@ -166,7 +169,7 @@ const COMPOSE=/* glsl */`
 export function createWaterMaterial(T,U,quality='high'){
  const high=quality==='high';
  const m=new T.MeshStandardMaterial({color:0xffffff,roughness:.04,metalness:0,transparent:true,side:T.DoubleSide,depthWrite:false});
- m.name='nexus-water-'+quality;m.defines={WATER_HIGH_FLAG:high?1:0};if(high)m.defines.WATER_HIGH='';
+ m.name='nexus-water-'+quality;m.defines={};if(high)m.defines.WATER_HIGH='';
  m.onBeforeCompile=s=>{
   Object.assign(s.uniforms,U);
   s.vertexShader=s.vertexShader.replace('#include <common>','#include <common>\n'+VERTEX_HEAD+'varying float vWFoamV;\n').replace('#include <begin_vertex>','#include <begin_vertex>\n'+VERTEX_BODY);
@@ -185,7 +188,7 @@ export function createWaterfallMist(T,{origin,up,flow,count=90,seed=7}){
  g.boundingSphere=new T.Sphere(new T.Vector3(...origin),.02);
  const side=new T.Vector3().crossVectors(new T.Vector3(...up),new T.Vector3(...flow)).normalize();
  const MU={mTime:{value:0},mUp:{value:new T.Vector3(...up)},mFlow:{value:new T.Vector3(...flow)},mSide:{value:side}};
- const m=new T.PointsMaterial({color:0xffffff,size:.004,sizeAttenuation:true,transparent:true,opacity:.28,depthWrite:false});m.name='nexus-waterfall-mist';
+ const m=new T.PointsMaterial({color:0xffffff,size:.004,sizeAttenuation:true,transparent:true,opacity:.32,depthWrite:false});m.name='nexus-waterfall-mist';
  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,MU);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 mistSeed;uniform float mTime;uniform vec3 mUp,mFlow,mSide;varying float vMistA;')
    .replace('#include <begin_vertex>',`#include <begin_vertex>
