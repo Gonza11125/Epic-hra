@@ -59,6 +59,8 @@ const hud = (p) => p.evaluate(() => ({ pos: document.getElementById('position')?
 const num = (re, s) => { const m = (s || '').match(re); return m ? +m[1].replace(/\s| /g, '').replace(',', '.') : null; };
 const parse = (h) => ({ lod: num(/LOD (\d+)/, h.stats), nature: num(/příroda (\d+)/, h.stats), water: num(/voda ([\d  ]+) △/, h.stats) || 0, walked: num(/pěšky ([\d ,]+) m/, h.stats) });
 const setVal = (p, sel, v) => p.evaluate(([s, v]) => { const e = document.querySelector(s); e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, [sel, v]);
+// 0.1.4.7a: méně používané volby jsou ve sbaleném menu (☰) – před klepnutím ho otevři, pokud je prvek skrytý.
+const clickUI = async (p, sel) => { if (!(await p.isVisible(sel)) && (await p.isVisible('#menuToggle'))) await p.click('#menuToggle'); await p.click(sel); };
 const shot = async (p, name) => { const f = path.join(OUT, name + '.png'); await p.screenshot({ path: f }); return f; };
 async function waitLanded(p, ms = LAND_MS) {
   const t0 = Date.now(); let h;
@@ -99,12 +101,12 @@ function finish(name, st) {
     const base = await shot(p, 'lake-02-view-mobile');
     const glMobile = (await hud(p)).gl; const wm = parse(await hud(p));
     // Voda vyp/zap
-    await p.click('#water'); await p.waitForTimeout(4000); const offH = await hud(p); const off = await shot(p, 'lake-03-water-off');
-    await p.click('#water'); await p.waitForTimeout(4000); const onH = await hud(p); const on = await shot(p, 'lake-04-water-on');
+    await clickUI(p, '#water'); await p.waitForTimeout(4000); const offH = await hud(p); const off = await shot(p, 'lake-03-water-off');
+    await clickUI(p, '#water'); await p.waitForTimeout(4000); const onH = await hud(p); const on = await shot(p, 'lake-04-water-on');
     rec('přepínač Voda vyp/zap', !/voda \d/.test(offH.stats) && /voda \d/.test(onH.stats), { off: offH.stats, on: onH.stats, glOff: offH.gl, glOn: onH.gl, screenshots: [off, on] });
     // Příroda vyp/zap
-    await p.click('#nature'); await p.waitForTimeout(4000); const nOff = await hud(p); const nOffS = await shot(p, 'lake-05-nature-off');
-    await p.click('#nature'); await p.waitForTimeout(5000); const nOn = await hud(p); const nOnS = await shot(p, 'lake-06-nature-on');
+    await clickUI(p, '#nature'); await p.waitForTimeout(4000); const nOff = await hud(p); const nOffS = await shot(p, 'lake-05-nature-off');
+    await clickUI(p, '#nature'); await p.waitForTimeout(5000); const nOn = await hud(p); const nOnS = await shot(p, 'lake-06-nature-on');
     rec('přepínač Příroda vyp/zap', parse(nOff).nature === 0 && parse(nOn).nature > 0, { off: nOff.stats, on: nOn.stats, glOff: nOff.gl, glOn: nOn.gl, screenshots: [nOffS, nOnS] });
     // Kvalita Vysoká
     await setVal(p, '#quality', 'high'); await p.waitForTimeout(12000); const hi = await hud(p); const hiS = await shot(p, 'lake-07-quality-high');
@@ -143,7 +145,7 @@ function finish(name, st) {
     const fly = [];
     for (let i = 0; i < 12; i++) { const h = await hud(p); fly.push({ t: i * 2, ...parse(h), msg: (h.msg || '').slice(0, 60) }); if (i === 1 || i === 6 || i === 11) await shot(p, `lake-11-fly-${i}`); await p.waitForTimeout(2000); }
     // nízký let 1,5 km
-    await setVal(p, '#alt', 250); await setVal(p, '#pitch', 35);
+    await setVal(p, '#alt', 384); // 1,5 km (0.1.4.7a: stupnice 0–500 = 0,15–3 km) await setVal(p, '#pitch', 35);
     const low = []; for (let i = 0; i < 20; i++) { const h = await hud(p); low.push({ t: i * 2, ...parse(h) }); if (i % 5 === 0) await shot(p, `lake-12-low-${i}`); await p.waitForTimeout(2000); }
     rec('vzlet (let)', /Přistát/.test((await hud(p)).mode), { fly: fly.filter((_, i) => i % 3 === 0), low: low.filter((_, i) => i % 4 === 0), gl: (await hud(p)).gl });
     // Návrat na zem

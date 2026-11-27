@@ -29,7 +29,7 @@ const THREE_DIR = process.env.THREE_DIR;
   await p.goto('http://localhost:8765/' + page, { waitUntil: 'load', timeout: 60000 });
   for (const step of JSON.parse(process.env.ACTIONS || '[]')) {
     if (step.wait) await p.waitForTimeout(step.wait);
-    if (step.click) await p.click(step.click);
+    if (step.click) { if (!(await p.isVisible(step.click)) && (await p.isVisible('#menuToggle'))) await p.click('#menuToggle'); await p.click(step.click); } // skryté volby jsou ve sbaleném menu (0.1.4.7a)
     if (step.value) await p.evaluate(([sel, v]) => { const e = document.querySelector(sel); e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, step.value);
     if (step.key) { await p.keyboard.down(step.key); await p.waitForTimeout(step.ms || 300); await p.keyboard.up(step.key); }
     if (step.until) { const re = new RegExp(step.until), t0 = Date.now(); while (Date.now() - t0 < (step.ms || 120000)) { const txt = await p.evaluate(() => (document.getElementById('message')?.textContent || '') + ' | ' + (document.getElementById('stats')?.textContent || '')); if (re.test(txt)) break; await p.waitForTimeout(1000); } }
